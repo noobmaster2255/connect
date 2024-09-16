@@ -25,5 +25,10 @@
 - Users can report suspicious activity: Allow users to report suspicious activity or spam.
 - Users can view their notification history: Display a list of notifications for each user.
 
+- Users can create and view profiles: Allow users to create profiles with basic information like name, bio, and profile picture.
+- Users can search for other users: Implement a search bar to find other users by name or username.
+- Users can send friend requests: Allow users to send friend requests to other users and accept or decline them.
+- Users can view their friend list: Display a list of friends for each user.
+
 
  
