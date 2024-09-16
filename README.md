@@ -31,5 +31,8 @@
 - Users can send friend requests: Allow users to send friend requests to other users and accept or decline them.
 - Users can view their friend list: Display a list of friends for each user.
 
-
+- Users can create and join groups: Allow users to create and join groups based on interests or topics.
+- Users can post updates in groups: Allow users to post updates in groups they are a part of.
+- Users can view group updates: Display a list of updates posted in each group.
+- Users can leave groups: Allow users to leave groups they are no longer interested in.
  
