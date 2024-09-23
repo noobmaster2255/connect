@@ -25,13 +25,15 @@
 - Users can view the posts feed.
 - Users can like comment and share the post.
 - Users can view the detailed post page.
-
+  
 - User can update the post.
 - User can view notifications.
 - Users can search for other users: Implement a search bar to find other users by name or username.
 - Users can send friend requests: Allow users to send friend requests to other users and accept or decline them.
   
 - Users can view their friend list: Display a list of friends for each user.
-- Users can view posts specific to other users
+- Users can view posts specific to other users.
+- Users can report a post.
+- Users can save a post.
 
  
