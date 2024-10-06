@@ -63,12 +63,14 @@ export default function Register({navigation, session, setSession}){
                 console.log("DATA 2 HERE ",data2);
                 console.log("ERROR 2 HERE ", error2);
                 if(error || error2){
+                    setIsLoading(false);
                     Alert.alert(error.message);
                 }
                 setIsLoading(false);
                 console.log("Loading done... signup");
                 setSession(data.session);
             } catch (error) {
+                setIsLoading(false);
                 console.log("Error signing up: ", error);
             }
             setIsLoading(false);

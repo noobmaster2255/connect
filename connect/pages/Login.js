@@ -58,6 +58,7 @@ export default function Login({ navigation, session, setSession }) {
             setSession(session);
             console.log(isLoading, "Done");
           } else {
+            setIsLoading(false);
             Alert.alert(
               error.message
                 .split(" ")
@@ -66,8 +67,10 @@ export default function Login({ navigation, session, setSession }) {
             );
           }
         } catch (error) {
+          setIsLoading(false);
           throw error;
         }
+        setIsLoading(false);
       }
     }
   };
