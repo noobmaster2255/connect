@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#fff',
   },
   header: {
     fontSize: 24,
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#f4f4f4',
   },
   textArea: {
     borderWidth: 1,
@@ -143,17 +143,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#f4f4f4',
     height: 100,
   },
   saveButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#ffad73',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
   },
   saveButtonText: {
-    color: '#fff',
+    color: '#333333',
     fontSize: 16,
     fontWeight: 'bold',
   },
