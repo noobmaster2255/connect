@@ -5,9 +5,11 @@ import Spacer from "../Components/Spacer/Spacer";
 import {useState} from 'react';
 import { supabase } from "../supabase";
 import Toast from "react-native-toast-message";
+import { ActivityIndicator } from "react-native";
 
 export default function Register({navigation, session, setSession}){
     //variables
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const [isLoading, setIsLoading] = useState(false);
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
@@ -15,8 +17,32 @@ export default function Register({navigation, session, setSession}){
     const [confirmPassword, setConfirmPassword] = useState('');
     const [userId, setUserId] = useState(null);
     //functions
+    const isValidEmail = (email) => {
+        return emailRegex.test(email);
+      };
+      
     const handleSignup = async () => {
         if(password === confirmPassword && fullName !== '' && email !== ''){
+            if(!isValidEmail(email)){
+                console.log("In valid email")
+                Toast.show({
+                    type: 'error',
+                    text1: "Invalid Email",
+                    text1Style: {fontSize: 14},
+                    text2: "Provide a valid email!",
+                    position: 'bottom',
+                    text2Style: {fontSize: 12, color: "#860000"}
+                });
+            } else if(password.length < 6){
+                Toast.show({
+                    type: 'error',
+                    text1: "Invalid password",
+                    text1Style: {fontSize: 14},
+                    text2: "Minimum 5 characters",
+                    position: 'bottom',
+                    text2Style: {fontSize: 12, color: "#860000"}
+                });
+            }
             try {
                 setIsLoading(true);
                 console.log("Loading .... signup");
@@ -37,13 +63,20 @@ export default function Register({navigation, session, setSession}){
                 console.log("DATA 2 HERE ",data2);
                 console.log("ERROR 2 HERE ", error2);
                 if(error || error2){
+                    setIsLoading(false);
                     Alert.alert(error.message);
                 }
-                Alert.alert("Check your inbox for email verification!")
                 setIsLoading(false);
                 console.log("Loading done... signup");
+                Toast.show({
+                    type: 'success',
+                    text1: "Signup Success",
+                    text1Style: {fontSize: 14},
+                    position: 'bottom',
+                });
                 setSession(data.session);
             } catch (error) {
+                setIsLoading(false);
                 console.log("Error signing up: ", error);
             }
             setIsLoading(false);
@@ -70,6 +103,7 @@ export default function Register({navigation, session, setSession}){
         <View style={styles.registerContainer}>
             <View style={styles.imageContainer}>
                  <Image style={{height: 70, width: 320}} source={require("../assets/images/konnect.png")}></Image>
+                 {isLoading ? <ActivityIndicator style={{padding: 20}} size={"large"} color={"#FFC2E2"}/> : null}
             </View>
             <View style={styles.formContainer}>
                 <AppTextInput
