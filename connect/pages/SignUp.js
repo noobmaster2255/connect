@@ -6,7 +6,7 @@ import {useState} from 'react';
 import { supabase } from "../supabase";
 import Toast from "react-native-toast-message";
 
-export default function Register({navigation}){
+export default function Register({navigation, session, setSession}){
     //variables
     const [isLoading, setIsLoading] = useState(false);
     const [fullName, setFullName] = useState('');
@@ -42,11 +42,12 @@ export default function Register({navigation}){
                 Alert.alert("Check your inbox for email verification!")
                 setIsLoading(false);
                 console.log("Loading done... signup");
+                setSession(data.session);
             } catch (error) {
                 console.log("Error signing up: ", error);
             }
             setIsLoading(false);
-            navigation.navigate("Home")
+            
         } else {
             Toast.show({
                 type: 'error',

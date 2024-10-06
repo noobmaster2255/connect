@@ -34,24 +34,20 @@ export default function App() {
   }
 
   return (
-    //authenticated flow stack
     <NavigationContainer>
-      {session ? (
-        <Stack.Navigator initialRoute="Home">
-          <Stack.Screen
-            options={{ headerShown: false }}
-            name="Home"
-            component={Home}
-          />
-          <Stack.Screen
-            options={{headerShown: false}}
-            name="Login"
-            component={Login}
-          />
-        </Stack.Navigator>
+      <Stack.Navigator>
+      {session ? ( 
+        <>
+          <Stack.Screen name="Home">
+              {(props) => <Home {...props} session={session} setSession={setSession} />}
+            </Stack.Screen>
+          <Stack.Screen name="Profile">
+            {(props) => <Profile {...props} session={session} setSession={setSession}/>}
+          </Stack.Screen>
+        </>
       ) : (
-        //unauthneticated flow
-        <Stack.Navigator initialRoute="Welcome">
+        // Unauthenticated flow (Stack Navigator)
+        <>
           <Stack.Screen
             options={{ headerShown: false }}
             name="Welcome"
@@ -59,21 +55,17 @@ export default function App() {
           />
           <Stack.Screen
             options={{ headerShown: false }}
-            name="Login"
-            component={Login}
-          />
+            name="Login">
+              {(props) => <Login {...props} session={session} setSession={setSession}/>}
+            </Stack.Screen>
           <Stack.Screen
             options={{ headerShown: false }}
-            name="Register"
-            component={Register}
-          />
-          <Stack.Screen
-            options={{ headerShown: false }}
-            name="Home"
-            component={Home}
-          />
-        </Stack.Navigator>
+            name="Register">
+              {(props) => <Register  {...props} session={session} setSession={setSession}/>}
+            </Stack.Screen>
+        </>
       )}
+      </Stack.Navigator>
       <StatusBar style="auto" />
       <Toast />
     </NavigationContainer>

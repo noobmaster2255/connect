@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, Image, Button, ScrollView, SafeAreaView } from 
 import { useState, useEffect } from "react";
 import { supabase } from "../supabase";
 
-const ProfilePage = ({ navigation }) => {
+const ProfilePage = ({ navigation, session, setSession}) => {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 

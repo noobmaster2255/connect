@@ -4,36 +4,36 @@ import AppTextInput from "../Components/TextInput/TextInput";
 import AppButton from "../Components/Button/Button";
 import { supabase } from "../supabase";
 
-export default function Login({ navigation }) {
+export default function Login({ navigation, session, setSession}) {
 
     //
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     //
-    const goToHome = () => {
-      navigation.replace("Home");
-    };
     const handleLogin = async () => {
       try {
-        console.log(email, password);
         setIsLoading(true, "Started");
-        console.log(isLoading);
-        const {error} = await supabase.auth.signInWithPassword({
+        const {error, data} = await supabase.auth.signInWithPassword({
           email: email,
           password: password
         });
-
+        console.log("ERROR HERER", error);
         if(!error){
+          console.log("in here")
+          console.log(data);
+          const {user, session} = data;
+          console.log("SESSION IN !ERROR", session)
           console.log("User", supabase.auth.getUser().then((data) => console.log("User data ", data)))
           setIsLoading(false);
+          setSession(session);
           console.log(isLoading, "Done");
-          goToHome();
         }
         Alert.alert(error.message.split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" "));
       } catch (error) {
        throw error
       };
+      
       }
     const goToRegister = () => {
         navigation.navigate("Register");
