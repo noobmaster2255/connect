@@ -45,6 +45,9 @@ export default function App() {
           <Stack.Screen name="Profile">
             {(props) => <Profile {...props} session={session} setSession={setSession}/>}
           </Stack.Screen>
+          <Stack.Screen name="EditProfile">
+            {(props) => <EditProfile {...props}/>}
+          </Stack.Screen>
         </>
       ) : (
         // Unauthenticated flow (Stack Navigator)
