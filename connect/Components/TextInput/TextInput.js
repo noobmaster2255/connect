@@ -5,6 +5,10 @@ export default function AppTextInput({
   inputMode,
   autoComplete,
   keyboardType,
+  textContentType,
+  secureTextEntry,
+  onChangeText,
+  autoCapitalize
 }) {
   return (
     <View style={styles.textInputContainer}>
@@ -15,7 +19,11 @@ export default function AppTextInput({
         clearButtonMode="while-editing"
         keyboardType={keyboardType}
         placeholder={placeholder}
+        autoCapitalize={autoCapitalize}
         placeholderTextColor={"#999999"}
+        textContentType={textContentType}
+        secureTextEntry={secureTextEntry}
+        onChangeText={onChangeText}
       ></TextInput>
     </View>
   );
@@ -25,6 +33,7 @@ const styles = StyleSheet.create({
   textInputContainer: {
     width: 320,
     height: 50,
+    marginBottom: 20
   },
   textInput: {
     flex: 1,

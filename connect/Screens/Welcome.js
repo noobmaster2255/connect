@@ -1,17 +1,22 @@
 import { View, StyleSheet, Image, Text, TouchableOpacity, StatusBar } from "react-native";
 import AppButton from "../Components/Button/Button";
-import AppTextInput from "../Components/TextInput/TextInput";
 
 export default function WelcomeScreen({navigation}) {
     console.log(navigation)
+    const goToLogin = () => {
+        navigation.navigate("Login")
+    };
+    const goToSignup = () => {
+        navigation.navigate("Register");
+    };
   return (
     <View style={styles.welcomeScreenContainer}>
       <View style={styles.topContent}>
         <View style={styles.imageContainer}>
-          <Image style={{width: 200, height: 200}} source={require("../assets/images/Konnect_vector.png")} />
+          <Image style={{width: 250, height: 250}} source={require("../assets/images/Konnect_vector.png")} />
         </View>
         <View style={styles.imageContainer}>
-          <Image source={require("../assets/images/Konnect.png")}></Image>
+          <Image style={{height: 70, width: 320}} source={require("../assets/images/konnect.png")}></Image>
         </View>
         <View style={styles.taglineContainer}>
           <Text style={styles.taglineTextStyle}>
@@ -19,18 +24,10 @@ export default function WelcomeScreen({navigation}) {
           </Text>
         </View>
       </View>
-      {/* <View style={styles.formContainer}>
-        <AppTextInput
-          placeholder={"Email"}
-          keyboardType={"email"}
-          inputMode={"email"}
-          autoComplete={"email"}
-        />
-      </View> */}
       <View style={styles.buttonContainer}>
-        <AppButton onPress={() => {}} title={"Get Started"} />
+        <AppButton onPress={goToSignup} title={"Get Started"} />
         <View style={styles.loginPrompt}>
-        <Text style={{fontSize: 16}}>Already a user? <Text style={styles.loginStyle} onPress={()=>{console.log("Login clicked")}}>Login</Text></Text>
+        <Text style={{fontSize: 16}}>Already a user? <Text style={styles.loginStyle} onPress={goToLogin}>Login</Text></Text>
       </View>
       </View>
     </View>
@@ -47,10 +44,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   taglineContainer: {
+    marginTop: 20,
     paddingBottom: 30,
   },
   taglineTextStyle: {
-    fontSize: 18,
+    fontSize: 16,
   },
   imageContainer: {
     position: "relative",
@@ -58,8 +56,6 @@ const styles = StyleSheet.create({
     width: 200,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
-    marginBottom: 20,
   },
   loginPrompt:{
     flexDirection: 'row',
