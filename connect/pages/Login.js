@@ -56,7 +56,12 @@ export default function Login({ navigation, session, setSession }) {
             );
             setIsLoading(false);
             setSession(session);
-            console.log(isLoading, "Done");
+            Toast.show({
+              type: 'success',
+              text1: "Login Success",
+              text1Style: {fontSize: 14},
+              position: 'bottom',
+          });
           } else {
             setIsLoading(false);
             Alert.alert(

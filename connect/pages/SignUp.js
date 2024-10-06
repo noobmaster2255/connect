@@ -68,6 +68,12 @@ export default function Register({navigation, session, setSession}){
                 }
                 setIsLoading(false);
                 console.log("Loading done... signup");
+                Toast.show({
+                    type: 'success',
+                    text1: "Signup Success",
+                    text1Style: {fontSize: 14},
+                    position: 'bottom',
+                });
                 setSession(data.session);
             } catch (error) {
                 setIsLoading(false);
