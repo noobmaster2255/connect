@@ -122,7 +122,7 @@ const EditProfile = ({ navigation, session, setSession }) => {
           numberOfLines={4}
         />
       </View>
-      <View>
+      <View style={styles.logoutBtn}>
         <AppButton title={"Logout"} onPress={signOut} />
       </View>
 
@@ -182,5 +182,10 @@ const styles = StyleSheet.create({
     color: "#333333",
     fontSize: 16,
     // fontWeight: 'bold',
+  },
+  logoutBtn: {
+    display:'flex',
+    alignItems:'center',
+    marginBottom: 20,
   },
 });
