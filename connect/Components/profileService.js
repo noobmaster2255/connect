@@ -1,15 +1,17 @@
 import { supabase } from '../supabase';
 
 export const updateProfile = async (userId, username, fullName, bio) => {
+  // console.log('Updating profile for userId:', userId);
+
   const { data, error } = await supabase
     .from('profiles')
     .update({
       username: username,
       full_name: fullName,
       bio: bio,
-      updated_at: new Date(),  // Update the timestamp
+      updated_at: new Date(),
     })
-    .eq('id', userId);  // Use the logged-in user's ID
+    .eq('user_id', userId);
 
   if (error) {
     console.error('Error updating profile: ', error);

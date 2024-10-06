@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, StackRouter } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Register from './pages/SignUp.js';
 import Login from './pages/Login.js';
@@ -12,6 +12,7 @@ import { supabase } from './supabase.js';
 import { Session } from '@supabase/supabase-js';
 import Home from './pages/Home.js';
 import Toast from 'react-native-toast-message';
+import EditProfile from './pages/EditProfile.js';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -47,6 +48,16 @@ export default function App() {
             options={{headerShown: false}}
             name="Login"
             component={Login}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Profile"
+            component={Profile}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="EditProfile"
+            component={EditProfile}
           />
         </Stack.Navigator>
       ) : (

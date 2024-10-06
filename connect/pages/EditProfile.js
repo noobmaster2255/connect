@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { supabase } from '../supabase';
 import Toast from 'react-native-toast-message';
-import { updateProfile } from '../Components/profileService';  // Assuming the update function is in profileService.js
+import { updateProfile } from '../Components/profileService';
 
 const EditProfile = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -11,12 +11,11 @@ const EditProfile = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Fetch the current user profile when the component is mounted
     const fetchProfile = async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('username, full_name, bio')
-        .single();  // Assuming there's one profile per user
+        .single();
 
       if (data) {
         setUsername(data.username);
@@ -30,24 +29,41 @@ const EditProfile = ({ navigation }) => {
 
   const handleSave = async () => {
     setLoading(true);
-    const user = supabase.auth.user();  // Get current logged-in user
-    
-    const { data, error } = await updateProfile(user.id, username, fullName, bio);
-    if (error) {
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+  
+      if (userError) {
+        throw userError;
+      }
+  
+      const { data, error } = await updateProfile(user.id, username, fullName, bio);
+  
+      if (error) {
+        Toast.show({
+          type: 'error',
+          text1: 'Update Failed',
+          text2: error.message,
+          position: 'bottom'
+        });
+      } else {
+        Toast.show({
+          type: 'success',
+          text1: 'Profile Updated',
+          text2: 'Your profile has been successfully updated!',
+          position: 'bottom'
+        });
+        navigation.goBack();
+      }
+    } catch (error) {
+      console.error('Error during profile update:', error);
       Toast.show({
         type: 'error',
-        text1: 'Update Failed',
-        text2: error.message
+        text1: 'An error occurred',
+        text2: error.message,
       });
-    } else {
-      Toast.show({
-        type: 'success',
-        text1: 'Profile Updated',
-        text2: 'Your profile has been successfully updated!'
-      });
-      navigation.goBack();  // Return to the previous screen
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -60,6 +76,7 @@ const EditProfile = ({ navigation }) => {
           style={styles.input}
           value={username}
           onChangeText={(text) => setUsername(text)}
+          autoCapitalize='none'
         />
       </View>
 
