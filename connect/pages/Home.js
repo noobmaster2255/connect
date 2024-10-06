@@ -9,10 +9,7 @@ export default function Home({navigation, session}){
        if(!error){
         console.log("Signed out...");
         console.log("Data : " , data);
-        navigation.reset({
-            index: 0,
-            routes: [{name: "Welcome"}]
-          });
+        navigation.navigate("Login");
        } else {
        console.log("Signout error", error);
        }

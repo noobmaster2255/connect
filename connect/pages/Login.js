@@ -12,12 +12,10 @@ export default function Login({ navigation }) {
     const [isLoading, setIsLoading] = useState(false);
     //
     const goToHome = () => {
-      navigation.reset({
-        index: 0,
-        routes: [{name: "Home"}]
-      });
+      navigation.replace("Home");
     };
     const handleLogin = async () => {
+      try {
         console.log(email, password);
         setIsLoading(true, "Started");
         console.log(isLoading);
@@ -26,15 +24,17 @@ export default function Login({ navigation }) {
           password: password
         });
 
-        if(error){
-          Alert.alert(error.message);
+        if(!error){
+          console.log("User", supabase.auth.getUser().then((data) => console.log("User data ", data)))
+          setIsLoading(false);
+          console.log(isLoading, "Done");
+          goToHome();
         }
-        console.log("User", supabase.auth.getUser().then((data) => console.log("User data ", data)))
-        setIsLoading(false);
-        console.log(isLoading, "Done");
-        goToHome();
-    };
-
+        Alert.alert(error.message.split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" "));
+      } catch (error) {
+       throw error
+      };
+      }
     const goToRegister = () => {
         navigation.navigate("Register");
     };
