@@ -11,7 +11,7 @@ import Profile from "./pages/Profile";
 
 const Tab = createBottomTabNavigator();
 
-function HomeScreen() {
+export default function App(){
   return (
     <NavigationContainer>
       <Stack.Navigator initialRoute="Welcome">
@@ -19,11 +19,6 @@ function HomeScreen() {
         <Stack.Screen options={{headerShown: false}} name="Login" component={Login} />
         <Stack.Screen options={{headerShown: false}} name="Register" component={Register} />
       </Stack.Navigator>
-        <Tab.Navigator>
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Profile" component={Profile} />
-        {/* <Tab.Screen name="Settings" component={SettingsPage} /> */}
-      </Tab.Navigator>
       <StatusBar style='auto' />
     </NavigationContainer>
   );
