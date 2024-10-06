@@ -1,24 +1,23 @@
 import { StyleSheet, View, Text, Image, Button, ScrollView, SafeAreaView } from "react-native";
 import { useState, useCallback } from "react";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 import { supabase } from "../supabase";
 
-const ProfilePage = ({ navigation, session, setSession}) => {
+const ProfilePage = ({ navigation, session, setSession }) => {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProfile = async () => {
-    await supabase.auth.getUser()
-      .then(async (data) => {
-        // console.log(data);
-        // console.log(data.data.user.id);
-        if(data) {
-          const profileData = await getProfile(data.data.user.id);
-          // console.log(profileData);
-          setProfile(profileData);
-        }
-        setIsLoading(false);
-      });
+    await supabase.auth.getUser().then(async (data) => {
+      // console.log(data);
+      // console.log(data.data.user.id);
+      if (data) {
+        const profileData = await getProfile(data.data.user.id);
+        // console.log(profileData);
+        setProfile(profileData);
+      }
+      setIsLoading(false);
+    });
   };
 
   useFocusEffect(
@@ -32,22 +31,25 @@ const ProfilePage = ({ navigation, session, setSession}) => {
     return <Text>Loading...</Text>;
   }
 
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.profileHeader}>
-          {/* <Image
+          <Image
             source={
               profile.profile_image_url
                 ? { uri: profile.profile_image_url }
-                : require("../assets/default-profile.png")
-            } // Dynamic profile image
+                : require("../assets/images/Konnect_vector.png") // Default profile image
+            }
             style={styles.profileImage}
-          /> */}
+          />
           <Text style={styles.profileName}>{profile.full_name || "John Doe"}</Text>
-          <Text style={styles.profileUsername}>@{profile.username || "Please set a username."}</Text>
+          <Text style={styles.profileUsername}>
+            @{profile.username || "Please set a username."}
+          </Text>
           <Text style={styles.profileUsername}>{profile.bio || "Please set a bio."}</Text>
-          <Button title="Edit Profile" onPress={() => navigation.navigate("EditProfile")} />
+          <Button title="Edit Profile" onPress={() => navigation.navigate("EditProfile", { session, setSession })} />
         </View>
 
         <View style={styles.profileDetails}>
@@ -71,10 +73,7 @@ const ProfilePage = ({ navigation, session, setSession}) => {
 const getProfile = async (userId) => {
   // console.log("User ID:", userId);
   try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('user_id', userId);
+    const { data, error } = await supabase.from("profiles").select("*").eq("user_id", userId);
 
     if (error) {
       console.log("Error fetching profile:", error);
