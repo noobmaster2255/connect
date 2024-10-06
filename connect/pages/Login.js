@@ -3,6 +3,7 @@ import { useState } from 'react';
 import AppTextInput from "../Components/TextInput/TextInput";
 import AppButton from "../Components/Button/Button";
 import { supabase } from "../supabase";
+
 export default function Login({ navigation }) {
 
     //
