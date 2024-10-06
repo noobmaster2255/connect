@@ -1,18 +1,35 @@
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, View, Text, Image, Alert} from "react-native";
 import { useState } from 'react';
 import AppTextInput from "../Components/TextInput/TextInput";
 import AppButton from "../Components/Button/Button";
-
+import { supabase } from "../supabase";
 export default function Login({ navigation }) {
+
+    //
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const handleLogin = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    //
+    const handleLogin = async () => {
         console.log(email, password);
+        setIsLoading(true, "Started");
+        console.log(isLoading);
+        const {error} = await supabase.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+        if(error){
+          Alert.alert(error.message);
+        }
+        setIsLoading(false);
+        console.log(isLoading, "Done");
     };
 
     const goToRegister = () => {
         navigation.navigate("Register");
     };
+    //
   return (
     <View style={styles.loginContainer}>
       <View style={styles.imageContainer}>

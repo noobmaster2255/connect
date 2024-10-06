@@ -34,6 +34,7 @@ export default function Register({navigation}){
                 textContentType={"name"} 
                 secureTextEntry={false}
                 autoCapitalize={"sentences"}
+                onChangeText={(text) => {setFullName(text)}}
                 />
                 <AppTextInput
                 placeholder={"Email"}
@@ -43,6 +44,7 @@ export default function Register({navigation}){
                 textContentType={"emailAddress"}
                 secureTextEntry={false}
                 autoCapitalize={"none"}
+                onChangeText={(text) => {setEmail(text)}}
                 />
                 <AppTextInput
                 placeholder={"Password"}
@@ -52,6 +54,7 @@ export default function Register({navigation}){
                 textContentType={"password"}
                 secureTextEntry={true}
                 autoCapitalize={"none"}
+                onChangeText={(text) => {setPassword(text)}}
                 />
                 <AppTextInput
                 placeholder={"Password"}
@@ -61,6 +64,7 @@ export default function Register({navigation}){
                 textContentType={"password"}
                 secureTextEntry={true}
                 autoCapitalize={"none"}
+                onChangeText={(text) => {setConfirmPassword(text)}}
                 />
             </View>
             <View style={styles.buttonContainer}>
