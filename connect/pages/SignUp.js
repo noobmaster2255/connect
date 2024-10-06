@@ -12,8 +12,11 @@ export default function Register({navigation}){
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     //functions
-    const handleSignup = () => {
-       
+    const handleSignup = async () => {
+        if(password === confirmPassword){
+        } else {
+
+        }
         console.log(fullName, " ", email, " ", password)
     };
     const isScreenInStack = (routeName) => {
