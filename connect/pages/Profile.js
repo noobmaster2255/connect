@@ -9,11 +9,8 @@ const ProfilePage = ({ navigation, session, setSession }) => {
 
   const fetchProfile = async () => {
     await supabase.auth.getUser().then(async (data) => {
-      // console.log(data);
-      // console.log(data.data.user.id);
       if (data) {
         const profileData = await getProfile(data.data.user.id);
-        // console.log(profileData);
         setProfile(profileData);
       }
       setIsLoading(false);
@@ -40,7 +37,7 @@ const ProfilePage = ({ navigation, session, setSession }) => {
             source={
               profile.profile_image_url
                 ? { uri: profile.profile_image_url }
-                : require("../assets/images/Konnect_vector.png") // Default profile image
+                : require("../assets/images/Konnect_vector.png")
             }
             style={styles.profileImage}
           />
@@ -71,7 +68,6 @@ const ProfilePage = ({ navigation, session, setSession }) => {
   );
 };
 const getProfile = async (userId) => {
-  // console.log("User ID:", userId);
   try {
     const { data, error } = await supabase.from("profiles").select("*").eq("user_id", userId);
 
@@ -79,8 +75,6 @@ const getProfile = async (userId) => {
       console.log("Error fetching profile:", error);
       throw error;
     }
-    // console.log("Profile data received:", data[0]);
-
     return data[0];
   } catch (error) {
     console.error("Error fetching profile:", error.message);
