@@ -11,6 +11,12 @@ export default function Login({ navigation }) {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     //
+    const goToHome = () => {
+      navigation.reset({
+        index: 0,
+        routes: [{name: "Home"}]
+      });
+    };
     const handleLogin = async () => {
         console.log(email, password);
         setIsLoading(true, "Started");
@@ -23,8 +29,10 @@ export default function Login({ navigation }) {
         if(error){
           Alert.alert(error.message);
         }
+        console.log("User", supabase.auth.getUser().then((data) => console.log("User data ", data)))
         setIsLoading(false);
         console.log(isLoading, "Done");
+        goToHome();
     };
 
     const goToRegister = () => {

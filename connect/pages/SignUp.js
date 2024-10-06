@@ -1,21 +1,52 @@
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, View, Text, Image, Alert } from "react-native";
 import AppTextInput from "../Components/TextInput/TextInput";
 import AppButton from "../Components/Button/Button";
 import Spacer from "../Components/Spacer/Spacer";
 import {useState} from 'react';
-import { useNavigation } from "@react-navigation/native";
+import { supabase } from "../supabase";
+import Toast from "react-native-toast-message";
 
 export default function Register({navigation}){
     //variables
+    const [isLoading, setIsLoading] = useState(false);
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     //functions
     const handleSignup = async () => {
-        if(password === confirmPassword){
+        if(password === confirmPassword && fullName !== '' && email !== ''){
+            try {
+                setIsLoading(true);
+                console.log("Loading .... signup");
+                const {error, data} = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            full_name: fullName
+                        }
+                    }
+                });
+                if(error){
+                    Alert.alert(error.message);
+                }
+                Alert.alert("Check your inbox for email verification!")
+                setIsLoading(false);
+                console.log("Loading done... signup");
+            } catch (error) {
+                console.log("Error signing up: ", error);
+            }
+            setIsLoading(false);
         } else {
-
+            Toast.show({
+                type: 'error',
+                text1: "Required fields empty!",
+                text1Style: {fontSize: 14},
+                text2: "Input all fields with proper data!",
+                position: 'bottom',
+                text2Style: {fontSize: 12, color: "#860000"}
+            });
         }
         console.log(fullName, " ", email, " ", password)
     };
@@ -99,7 +130,7 @@ const styles = StyleSheet.create({
         width: 200,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 200,
+        marginTop: 150,
         marginBottom: 20,
     },
     buttonContainer: {
