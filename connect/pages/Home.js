@@ -1,6 +1,7 @@
 import { StyleSheet, View, Text } from "react-native";
 import AppButton from "../Components/Button/Button";
 import { supabase } from "../supabase";
+import ProfilePage from "./Profile";
 
 export default function Home({navigation, session, setSession}){
     const signOut = async () => {
@@ -17,6 +18,10 @@ export default function Home({navigation, session, setSession}){
     return(
     <View style={styles.container}>
         <Text style={{color: "#ff0000"}}>Home screen</Text>
+        <AppButton
+        title={"Go To Profile"}
+        onPress={() => navigation.navigate('Profile')}
+        />
         <AppButton 
         title={"Logout"}
         onPress={signOut}
@@ -31,5 +36,5 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
-    }
+    },
 })
