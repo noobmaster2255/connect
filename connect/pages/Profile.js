@@ -49,7 +49,7 @@ const ProfilePage = ({ navigation, session, setSession }) => {
             @{profile.username || "Please set a username."}
           </Text>
           <Text style={styles.profileUsername}>{profile.bio || "Please set a bio."}</Text>
-          <Button title="Edit Profile" onPress={() => navigation.navigate("EditProfile", { session, setSession })} />
+          <Button title="Edit Profile" onPress={() => navigation.navigate("EditProfile")} />
         </View>
 
         <View style={styles.profileDetails}>
