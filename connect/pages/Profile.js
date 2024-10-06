@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from "../supabase";
 
-const ProfilePage = ({ navigation }) => {
+const ProfilePage = ({ navigation, session, setSession}) => {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
