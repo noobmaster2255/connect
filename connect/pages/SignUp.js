@@ -13,6 +13,7 @@ export default function Register({navigation}){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [userId, setUserId] = useState(null);
     //functions
     const handleSignup = async () => {
         if(password === confirmPassword && fullName !== '' && email !== ''){
@@ -28,7 +29,14 @@ export default function Register({navigation}){
                         }
                     }
                 });
-                if(error){
+                console.log("USER HERE" ,data.session.user.id)
+                const {data: data2, error: error2} = await supabase.from("profiles").insert([{
+                    user_id: data.session.user.id,
+                    full_name: fullName
+                }], {bypassRls: true});
+                console.log("DATA 2 HERE ",data2);
+                console.log("ERROR 2 HERE ", error2);
+                if(error || error2){
                     Alert.alert(error.message);
                 }
                 Alert.alert("Check your inbox for email verification!")
@@ -38,6 +46,7 @@ export default function Register({navigation}){
                 console.log("Error signing up: ", error);
             }
             setIsLoading(false);
+            navigation.navigate("Home")
         } else {
             Toast.show({
                 type: 'error',
@@ -49,7 +58,9 @@ export default function Register({navigation}){
             });
         }
         console.log(fullName, " ", email, " ", password)
+
     };
+    //function to check if a screen is in stack
     const isScreenInStack = (routeName) => {
         const state = navigation.getState();
         return state.routes.some((route) => route.name == routeName);

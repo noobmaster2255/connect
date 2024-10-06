@@ -34,17 +34,23 @@ export default function App() {
   }
 
   return (
+    //authenticated flow stack
     <NavigationContainer>
       {session ? (
-        <Stack.Navigator>
+        <Stack.Navigator initialRoute="Home">
           <Stack.Screen
             options={{ headerShown: false }}
             name="Home"
             component={Home}
-            
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Login"
+            component={Login}
           />
         </Stack.Navigator>
       ) : (
+        //unauthneticated flow
         <Stack.Navigator initialRoute="Welcome">
           <Stack.Screen
             options={{ headerShown: false }}
