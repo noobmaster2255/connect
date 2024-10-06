@@ -84,6 +84,7 @@ const EditProfile = ({ navigation, session, setSession }) => {
     if (!error) {
       console.log("Signed out...");
       console.log("Data : ", data);
+      setSession(null);
     } else {
       console.log("Signout error", error);
     }

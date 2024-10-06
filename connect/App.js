@@ -18,14 +18,14 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-function ProfileStack({ session }) {
+function ProfileStack({ session , setSession}) {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Profile" options={{ headerShown: false }}>
         {(props) => <Profile {...props} session={session} />}
       </Stack.Screen>
       <Stack.Screen name="EditProfile" options={{ headerShown: false }}>
-        {(props) => <EditProfile {...props} session={session} />}
+        {(props) => <EditProfile {...props} session={session} setSession={setSession}/>}
       </Stack.Screen>
     </Stack.Navigator>
   );
@@ -74,7 +74,7 @@ export default function App() {
           </Tab.Screen>
           {/* <Tab.Screen name="AddPost">{(props) => }</Tab.Screen> */}
           <Tab.Screen name="Profile">
-            {(props) => <ProfileStack {...props} session={session} />}
+            {(props) => <ProfileStack {...props} session={session} setSession={setSession}/>}
           </Tab.Screen>
         </Tab.Navigator>
       ) : (
