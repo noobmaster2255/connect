@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import WelcomeScreen from './Screens/Welcome';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Login from './Screens/Login';
-import Register from './Screens/Register';
+import Register from './pages/SignUp.js';
+import Login from './pages/Login.js';
+import WelcomeScreen from './pages/Welcome.js';
 
 export default function App() {
   return (
