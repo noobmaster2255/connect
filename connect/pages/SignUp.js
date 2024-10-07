@@ -22,9 +22,9 @@ export default function Register({navigation, session, setSession}){
       };
       
     const handleSignup = async () => {
-        if(password === confirmPassword && fullName !== '' && email !== ''){
+        if(password !== '' && confirmPassword !== '' && fullName !== '' && email !== ''){
             if(!isValidEmail(email)){
-                console.log("In valid email")
+                console.log("Invalid email")
                 Toast.show({
                     type: 'error',
                     text1: "Invalid Email",
@@ -38,11 +38,20 @@ export default function Register({navigation, session, setSession}){
                     type: 'error',
                     text1: "Invalid password",
                     text1Style: {fontSize: 14},
-                    text2: "Minimum 5 characters",
+                    text2: "Minimum 6 characters",
                     position: 'bottom',
                     text2Style: {fontSize: 12, color: "#860000"}
                 });
-            }
+            } else if(password !== confirmPassword){
+                Toast.show({
+                    type: 'error',
+                    text1: "Password mismatch",
+                    text1Style: {fontSize: 14},
+                    text2: "Make sure to input same password.",
+                    position: 'bottom',
+                    text2Style: {fontSize: 12, color: "#860000"}
+                });
+            } else {
             try {
                 setIsLoading(true);
                 console.log("Loading .... signup");
@@ -80,7 +89,7 @@ export default function Register({navigation, session, setSession}){
                 console.log("Error signing up: ", error);
             }
             setIsLoading(false);
-            
+        }
         } else {
             Toast.show({
                 type: 'error',
@@ -178,8 +187,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 150,
         marginBottom: 20,
-    },
-    buttonContainer: {
     },
     loginStyle: {
         fontWeight: '600',
