@@ -188,8 +188,6 @@ const styles = StyleSheet.create({
         marginTop: 150,
         marginBottom: 20,
     },
-    buttonContainer: {
-    },
     loginStyle: {
         fontWeight: '600',
         color: '#ffad73',
