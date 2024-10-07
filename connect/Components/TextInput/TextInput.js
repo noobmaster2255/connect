@@ -14,6 +14,7 @@ export default function AppTextInput({
     <View style={styles.textInputContainer}>
       <TextInput
         style={styles.textInput}
+        autoCorrect = {false}
         inputMode={inputMode}
         autoComplete={autoComplete}
         clearButtonMode="while-editing"
