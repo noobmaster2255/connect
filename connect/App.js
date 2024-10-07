@@ -14,6 +14,7 @@ import Home from "./pages/Home.js";
 import Toast from "react-native-toast-message";
 import EditProfile from "./pages/EditProfile.js";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import CreatePost from "./pages/CreatePost.js";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -59,7 +60,7 @@ export default function App() {
                 iconName = "home";
               } else if (route.name === "Profile") {
                 iconName = "person";
-              } else if (route.name === "AddPost") {
+              } else if (route.name === "CreatePost") {
                 iconName = "add-circle";
               }
               return <Ionicons name={iconName} size={size} color={color} />;
@@ -72,7 +73,9 @@ export default function App() {
           <Tab.Screen name="Home">
             {(props) => <Home {...props} session={session} setSession={setSession} />}
           </Tab.Screen>
-          {/* <Tab.Screen name="AddPost">{(props) => }</Tab.Screen> */}
+          <Tab.Screen name="CreatePost">
+            {(props) => <CreatePost {...props} session={session} setSession={setSession}/>}
+          </Tab.Screen>
           <Tab.Screen name="Profile">
             {(props) => <ProfileStack {...props} session={session} setSession={setSession}/>}
           </Tab.Screen>
