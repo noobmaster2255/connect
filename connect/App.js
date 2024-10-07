@@ -21,7 +21,7 @@ const Stack = createNativeStackNavigator();
 function ProfileStack({ session , setSession}) {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Profile" options={{ headerShown: false }}>
+      <Stack.Screen name="ProfileScreen" options={{ headerShown: false }}>
         {(props) => <Profile {...props} session={session} />}
       </Stack.Screen>
       <Stack.Screen name="EditProfile" options={{ headerShown: false }}>

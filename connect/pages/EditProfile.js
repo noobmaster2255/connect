@@ -64,7 +64,7 @@ const EditProfile = ({ navigation, session, setSession }) => {
           text2: "Your profile has been successfully updated!",
           position: "bottom",
         });
-        navigation.goBack();
+
       }
     } catch (error) {
       console.error("Error during profile update:", error);
@@ -83,7 +83,6 @@ const EditProfile = ({ navigation, session, setSession }) => {
     const { error, data } = await supabase.auth.signOut();
     if (!error) {
       console.log("Signed out...");
-      console.log("Data : ", data);
       setSession(null);
     } else {
       console.log("Signout error", error);
@@ -92,7 +91,6 @@ const EditProfile = ({ navigation, session, setSession }) => {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Edit Profile</Text>
-
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Username</Text>
         <TextInput
