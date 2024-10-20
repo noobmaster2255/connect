@@ -15,7 +15,8 @@ import Toast from "react-native-toast-message";
 import EditProfile from "./pages/EditProfile.js";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import CreatePost from "./pages/CreatePost.js";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import PostDetail from "./pages/PostDetail.js";
+import EditPost from "./pages/EditPost.js";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -28,6 +29,12 @@ function ProfileStack({ session , setSession}) {
       </Stack.Screen>
       <Stack.Screen name="EditProfile" options={{ headerShown: false }}>
         {(props) => <EditProfile {...props} session={session} setSession={setSession}/>}
+      </Stack.Screen>
+      <Stack.Screen name="PostDetail" options={{ headerShown: false }}>
+        {(props) => <PostDetail {...props} session={session} setSession={setSession}/>}
+      </Stack.Screen>
+      <Stack.Screen name="EditPost" options={{ headerShown: false }}>
+        {(props) => <EditPost {...props} session={session} setSession={setSession}/>}
       </Stack.Screen>
     </Stack.Navigator>
   );

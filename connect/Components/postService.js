@@ -4,6 +4,9 @@ import * as FileSystem  from 'expo-file-system'
 
 export const createOrUpdatePost = async(post)=>{
     try {
+
+        post.created_At = new Date().toISOString();
+        
         if(post.file && typeof post.file == 'object'){
             let isImg = post?.file?.type == 'image'
             let folderName = isImg? 'postImages':'postVideos'
