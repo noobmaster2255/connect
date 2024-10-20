@@ -15,6 +15,7 @@ import Toast from "react-native-toast-message";
 import EditProfile from "./pages/EditProfile.js";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import CreatePost from "./pages/CreatePost.js";
+import PostDetail from "./pages/PostDetail.js";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -27,6 +28,9 @@ function ProfileStack({ session , setSession}) {
       </Stack.Screen>
       <Stack.Screen name="EditProfile" options={{ headerShown: false }}>
         {(props) => <EditProfile {...props} session={session} setSession={setSession}/>}
+      </Stack.Screen>
+      <Stack.Screen name="PostDetail" options={{ headerShown: false }}>
+        {(props) => <PostDetail {...props} session={session} setSession={setSession}/>}
       </Stack.Screen>
     </Stack.Navigator>
   );
