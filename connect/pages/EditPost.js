@@ -18,7 +18,7 @@ const EditPost = ({ route, navigation }) => {
       Alert.alert('Success', 'Post updated successfully!', [
         {
           text: 'OK',
-          onPress: () => navigation.goBack(),
+          onPress: () => navigation.navigate('ProfileScreen')
         }
       ]);
     }
