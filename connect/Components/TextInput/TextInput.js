@@ -8,7 +8,8 @@ export default function AppTextInput({
   textContentType,
   secureTextEntry,
   onChangeText,
-  autoCapitalize
+  autoCapitalize,
+  marginBottom
 }) {
   return (
     <View style={styles.textInputContainer}>

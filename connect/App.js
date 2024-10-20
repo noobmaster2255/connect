@@ -15,6 +15,7 @@ import Toast from "react-native-toast-message";
 import EditProfile from "./pages/EditProfile.js";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import CreatePost from "./pages/CreatePost.js";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -50,6 +51,7 @@ export default function App() {
   }
 
   return (
+    <GestureHandlerRootView>
     <NavigationContainer>
       {session ? (
         <Tab.Navigator
@@ -96,5 +98,6 @@ export default function App() {
       <StatusBar style="auto" />
       <Toast />
     </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
