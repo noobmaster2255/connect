@@ -4,7 +4,6 @@ import {
   Text,
   Image,
   Button,
-  ScrollView,
   SafeAreaView,
   ActivityIndicator,
   Dimensions,
@@ -175,19 +174,18 @@ const ProfilePage = ({ navigation, session, setSession }) => {
           </View>
         </View>
 
-        <View style={styles.postsSection}>
+        <View style={styles.postsSection} contentContainerStyle={styles.gridContainer}>
           <Text style={styles.sectionTitle}>Posts</Text>
         </View>
 
-        <View style={styles.imageGrid}>
-          <FlatList
-            data={posts}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-            numColumns={3}
-            contentContainerStyle={styles.gridContainer}
-          />
-        </View>
+        <FlatList
+          data={posts}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          numColumns={3}
+          contentContainerStyle={styles.gridContainer}
+          style={styles.imageGrid}
+        />
       </SafeAreaView>
     </GestureHandlerRootView>
   );
@@ -254,10 +252,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   imageGrid: {
-    flexDirection: "row",
-    alignItems: 'center',
-    padding:5,
     width: "100%",
+    padding: 5,
+  },
+  gridContainer: {
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    paddingBottom: 10,
   },
   imageContainer: {
     width: windowWidth / 3,
