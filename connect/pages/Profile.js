@@ -4,15 +4,14 @@ import {
   Text,
   Image,
   Button,
-  ScrollView,
   SafeAreaView,
   ActivityIndicator,
   Dimensions,
+  TouchableOpacity
 } from "react-native";
 import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { supabase } from "../supabase";
-import ImageGrid from "../Components/ImageGrid/ImageGrid";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
 
 const getProfile = async (userId) => {
@@ -30,9 +29,34 @@ const getProfile = async (userId) => {
   }
 };
 
+const fetchLikesCount = async (postId) => {
+  const { count, error } = await supabase
+    .from('post_likes')
+    .select('id', { count: 'exact', head: true })
+    .eq('post_id', postId);
+  if (error) {
+    console.error("Error fetching likes count:", error.message);
+    return 0;
+  }
+  return count;
+};
+
+const fetchCommentsCount = async (postId) => {
+  const { count, error } = await supabase
+    .from('comments')
+    .select('id', { count: 'exact', head: true })
+    .eq('post_id', postId);
+  if (error) {
+    console.error("Error fetching comments count:", error.message);
+    return 0;
+  }
+  return count;
+};
+
 const ProfilePage = ({ navigation, session, setSession }) => {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [posts, setPosts] = useState([]);
   const [images, setImages] = useState([]);
 
   const fetchProfile = async () => {
@@ -43,7 +67,7 @@ const ProfilePage = ({ navigation, session, setSession }) => {
       if (userData) {
         const profileData = await getProfile(userData.user.id);
         setProfile(profileData);
-        await fetchPostFiles(userData.user.id);
+        await fetchPostDetails(userData.user.id);
       }
     } catch (error) {
       console.error("Error fetching profile:", error.message);
@@ -52,35 +76,34 @@ const ProfilePage = ({ navigation, session, setSession }) => {
     }
   };
 
-  const fetchPostFiles = async (userId) => {
+  const fetchPostDetails = async (userId) => {
     try {
-      const { data, error } = await supabase.from("posts").select("file").eq("userId", userId);
+      const { data, error } = await supabase.from("posts").select("*").eq("userId", userId);
       if (error) {
         throw new Error(error.message);
       }
 
-      if (data && data.length > 0) {
-        const postFiles = data
-          .map((post) => {
-            const file = post.file;
+      const postsData = await Promise.all(data.map(async (post) => {
+        const file = post.file ? supabase.storage.from("uploads").getPublicUrl(post.file).data.publicUrl : null;
+        const likesCount = await fetchLikesCount(post.id);
+        const commentsCount = await fetchCommentsCount(post.id);
 
-            if (file) {
-              const { data, error } = supabase.storage.from("uploads").getPublicUrl(file);
+        return {
+          id: post.id,
+          image: file,
+          caption: post.body,
+          likes: likesCount,
+          comments: commentsCount,
+        };
+      }));
 
-              if (error) {
-                console.error("Error fetching public URL:", error.message);
-                return null;
-              }
-              console.log("Fetched public URL:", data.publicUrl);
-              return data.publicUrl;
-            }
-            return null;
-          })
-          .filter((file) => file);
+      const imageUrls = await Promise.all(data.map(async (post) => {
+        const file = post.file ? supabase.storage.from("uploads").getPublicUrl(post.file).data.publicUrl : null;
+        return { id: post.id, imageUrl: file };
+      }));
 
-        console.log("Fetched image URLs:", postFiles);
-        setImages(postFiles);
-      }
+      setPosts(postsData);
+      setImages(imageUrls);
     } catch (error) {
       console.error("Error fetching post files:", error);
     }
@@ -94,24 +117,17 @@ const ProfilePage = ({ navigation, session, setSession }) => {
   );
 
   const renderItem = ({ item }) => {
-    console.log("Rendering item:", item); // Log the current item
-
     return (
-      <View style={styles.imageContainer}>
-        {item && item.trim() ? ( // Check if item exists and is not an empty string
-          <Image
-            source={{ uri: item }} // Assuming item is a valid URL
-            style={styles.gridImage}
-            resizeMode="cover"
-          />
-        ) : (
-          <Image
-            source={require("../assets/images/Konnect_vector.png")} // Fallback image
-            style={styles.gridImage}
-            resizeMode="contain" // Maintain aspect ratio for the fallback image
-          />
-        )}
-      </View>
+      <TouchableOpacity
+        style={styles.imageContainer}
+        onPress={() => navigation.navigate('PostDetail', { post: item })}
+      >
+        <Image
+          source={{ uri: item.image }}
+          style={styles.gridImage}
+          resizeMode="cover"
+        />
+      </TouchableOpacity>
     );
   };
 
@@ -139,7 +155,7 @@ const ProfilePage = ({ navigation, session, setSession }) => {
           <Text style={styles.profileUsername}>
             @{profile.username || "Please set a username."}
           </Text>
-          <Text style={styles.profileBio}>{profile.bio || "Please set a bio."}</Text>
+          <Text style={styles.profileBio}>{profile.bio || ""}</Text>
           <Button title="Edit Profile" onPress={() => navigation.navigate("EditProfile")} />
         </View>
 
@@ -158,19 +174,18 @@ const ProfilePage = ({ navigation, session, setSession }) => {
           </View>
         </View>
 
-        <View style={styles.postsSection}>
+        <View style={styles.postsSection} contentContainerStyle={styles.gridContainer}>
           <Text style={styles.sectionTitle}>Posts</Text>
         </View>
 
-        <View style={styles.imageGrid}>
-          <FlatList
-            data={images}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-            numColumns={3}
-            contentContainerStyle={styles.gridContainer}
-          />
-        </View>
+        <FlatList
+          data={posts}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          numColumns={3}
+          contentContainerStyle={styles.gridContainer}
+          style={styles.imageGrid}
+        />
       </SafeAreaView>
     </GestureHandlerRootView>
   );
@@ -237,10 +252,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   imageGrid: {
-    flexDirection: "row",
-    alignItems: 'center',
-    padding:5,
     width: "100%",
+    padding: 5,
+  },
+  gridContainer: {
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    paddingBottom: 10,
   },
   imageContainer: {
     width: windowWidth / 3,

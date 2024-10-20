@@ -53,9 +53,9 @@ const CreatePost = ({navigation, session, setSession}) => {
         console.log('body', inputText)
         console.log('file', file)
 
-        if(!inputText && !file){
-            Alert.alert("Post", "Please choose an Image or add Post Body")
-            return;
+        if (!file) {
+          Alert.alert("Post", "Please choose an Image");
+          return;
         }
 
         let data ={
