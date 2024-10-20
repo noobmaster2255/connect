@@ -90,6 +90,7 @@ const ProfilePage = ({ navigation, session, setSession }) => {
         const commentsCount = await fetchCommentsCount(post.id);
 
         return {
+          id: post.id,
           image: file,
           caption: post.body,
           likes: likesCount,

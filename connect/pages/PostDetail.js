@@ -7,6 +7,10 @@ const PostDetail = ({ route }) => {
   const navigation = useNavigation();
   const { post } = route.params;
 
+  const handleEditPost = () => {
+    navigation.navigate('EditPost', { post });
+  };
+  
   return (
     <View style={styles.container}>
       <Image source={{ uri: post.image }} style={styles.image} />
@@ -28,6 +32,11 @@ const PostDetail = ({ route }) => {
             <Ionicons name="share-social-outline" size={20} color={"black"}/>
           </TouchableOpacity>
           <Text>Share</Text>
+        </View>
+        <View style={styles.action}>
+          <TouchableOpacity style={styles.actionButton} onPress={handleEditPost}>
+            <Ionicons name="ellipsis-horizontal-outline" size={20} color={"black"}/>
+          </TouchableOpacity>
         </View>
       </View>
       <ScrollView style={styles.captionContainer}>
