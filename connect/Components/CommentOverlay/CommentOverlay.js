@@ -1,6 +1,6 @@
 // CommentOverlay.js
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   View,
@@ -14,21 +14,38 @@ import {
 import Ionicons from "react-native-vector-icons/Ionicons"; // Import Ionicons
 import AppTextInput from "../TextInput/TextInput"; // Make sure this is the right import for your text input
 import SendButton from "../IconButton/IconButton";
+import { supabase } from "../../supabase";
+import CommentItem from "../CommentRow/CommentRow";
 
 const CommentOverlay = ({ visible, onClose, postId }) => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]); // Replace with fetched comments
-
-  const handleAddComment = () => {
-    if (comment.trim()) {
-      setComments([...comments, comment]); // Add comment to the state
-      setComment(""); // Clear the input field
+  const handleAddComment = async () => {
+    console.log( await supabase.from('comments').select('*', 'posts(username)'))
+    const {data, error} = await supabase.from('comments').select('*'); //returns an array of objects
+    if(error){
+        console.log("Can't retrieve comments", error);
+        return
     }
+    setComments(data.map(obj => [obj.id, obj.username, obj.comment_content, obj.userId, obj.created_at, obj.post_id]));
   };
-
+  const fetchComments = async () => {
+    const {data, error} = await supabase.from('comments').select('*'); //returns an array of objects
+    if(error){
+        console.log("Can't retrieve comments", error);
+        return
+    }
+    setComments(data.map(obj => [obj.id, obj.username, obj.comment_content, obj.userId, obj.created_at, obj.post_id]));
+  }
+  
+    useEffect(() => {
+       if(visible){
+       fetchComments()
+       }
+    },[visible]);
+  
   return (
     <Modal transparent={true} visible={visible} animationType="slide">
-      <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.overlay}>
           <View style={styles.container}>
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
@@ -37,9 +54,7 @@ const CommentOverlay = ({ visible, onClose, postId }) => {
             <FlatList
               data={comments}
               renderItem={({ item }) => (
-                <View style={styles.comment}>
-                  <Text>{item}</Text>
-                </View>
+                <CommentItem username={item[1]} comment={item[2]} created_at={item[4]}/>
               )}
               keyExtractor={(item, index) => index.toString()}
             />
@@ -59,7 +74,6 @@ const CommentOverlay = ({ visible, onClose, postId }) => {
             </View>
           </View>
         </View>
-      </TouchableWithoutFeedback>
     </Modal>
   );
 };

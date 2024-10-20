@@ -51,7 +51,6 @@ export default function App() {
   }
 
   return (
-    <GestureHandlerRootView>
     <NavigationContainer>
       {session ? (
         <Tab.Navigator
@@ -98,6 +97,5 @@ export default function App() {
       <StatusBar style="auto" />
       <Toast />
     </NavigationContainer>
-    </GestureHandlerRootView>
   );
 }
