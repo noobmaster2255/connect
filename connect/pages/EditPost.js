@@ -24,14 +24,6 @@ const EditPost = ({ route, navigation }) => {
     }
   };
 
-  if (!post || !post.caption) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <TextInput
