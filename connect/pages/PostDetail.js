@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const PostDetail = ({ route }) => {
   const navigation = useNavigation();
@@ -9,16 +10,25 @@ const PostDetail = ({ route }) => {
   return (
     <View style={styles.container}>
       <Image source={{ uri: post.image }} style={styles.image} />
-      <View style={styles.actions}>
-        <TouchableOpacity style={styles.actionButton}>
-          <Text>❤️ {post.likeCount}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Text>💬 {post.commentCount}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Text>🔗 Share</Text>
-        </TouchableOpacity>
+      <View style={styles.actionsContainer}>
+        <View style={styles.action}>
+          <TouchableOpacity style={styles.actionButton}>
+            <Ionicons name="heart-outline" size={20} color={"black"}/>
+          </TouchableOpacity>
+          <Text>{post.likeCount}</Text>
+        </View>
+        <View style={styles.action}>
+          <TouchableOpacity style={styles.actionButton}>
+            <Ionicons name="chatbubble-outline" size={20} color={"black"}/>
+          </TouchableOpacity>
+          <Text>{post.commentCount}</Text>
+        </View>
+        <View style={styles.action}>
+          <TouchableOpacity style={styles.actionButton}>
+            <Ionicons name="share-social-outline" size={20} color={"black"}/>
+          </TouchableOpacity>
+          <Text>Share</Text>
+        </View>
       </View>
       <ScrollView style={styles.captionContainer}>
         <Text>{post.caption}</Text>
@@ -39,13 +49,16 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     marginBottom: 10,
   },
-  actions: {
+  actionsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginBottom: 10,
   },
+  action: {
+    padding: 10
+  },
   actionButton: {
-    padding: 10,
+    padding: 3,
   },
   captionContainer: {
     maxHeight: 200,
