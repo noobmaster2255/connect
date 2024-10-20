@@ -24,9 +24,9 @@
 - Users can create a post.
 - Users can view the posts feed.
 - Users can like comment and share the post.
-- Users can view the detailed post page.
+- User can view posts on profile page.
   
-- User can update the post.
+- Users can view the detailed post page and update.
 - User can view notifications.
 - Users can search for other users: Implement a search bar to find other users by name or username.
 - Users can send friend requests: Allow users to send friend requests to other users and accept or decline them.
