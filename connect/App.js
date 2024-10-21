@@ -78,7 +78,7 @@ export default function App() {
             tabBarInactiveTintColor: "gray",
           })}
         >
-          <Tab.Screen name="Home">
+          <Tab.Screen name="Home" >
             {(props) => <Home {...props} session={session} setSession={setSession} />}
           </Tab.Screen>
           <Tab.Screen name="CreatePost">
