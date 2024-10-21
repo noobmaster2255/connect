@@ -25,7 +25,6 @@ const CommentOverlay = ({ visible, onClose, postId }) => {
   const handleAddComment = async () => {
     if (comment !== "") {
        await addComment(postId, comment);
-        setComment(""); // Clear the comment input after adding
     } else {
       Toast.show({
         type: "error",

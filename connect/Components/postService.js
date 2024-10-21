@@ -101,7 +101,11 @@ const getUserName = async (user_id)=>{
 export const addComment = async (postId, comment) => {
     const sessionData = await supabase.auth.getSession();
     let userName = await getUserName(sessionData.data.session.user.id);
-    const { data, error } = await supabase.from('comments').insert([{'userId': sessionData.data.session.user.id, 'comment_content': comment, 'username': userName.username, 'post_id': postId}])
+    console.log(userName);
+    const { data, error } = await supabase.from('comments').insert([{'userId': sessionData.data.session.user.id, 'comment_content': comment, 'username': userName.username, 'post_id': postId}]);
+    if(error){
+        console.log(error)
+    }
 }
 // export const isUserLiked = async (postId) => {
 //     const sessionData = await supabase.auth.getSession();
