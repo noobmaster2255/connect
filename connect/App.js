@@ -6,7 +6,7 @@ import Login from "./pages/Login.js";
 import WelcomeScreen from "./pages/Welcome.js";
 import { StatusBar } from "expo-status-bar";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { StyleSheet, Text, View } from "react-native";
+import { LogBox, StyleSheet, Text, View } from "react-native";
 import Profile from "./pages/Profile";
 import { supabase } from "./supabase.js";
 import { Session } from "@supabase/supabase-js";
@@ -39,6 +39,8 @@ function ProfileStack({ session , setSession}) {
     </Stack.Navigator>
   );
 }
+
+LogBox.ignoreLogs(['Warning: TNodeChildrenRenderer','Warning: MemoizedTNodeRenderer','Warning: TRenderEngineProvider'])
 
 export default function App() {
   const [session, setSession] = useState(null);

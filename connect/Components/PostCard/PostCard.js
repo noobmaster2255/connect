@@ -84,7 +84,7 @@ const PostCard = ({item, currentUser, hasShadow=true}) => {
             {
                 item?.file && item?.file?.includes('postVideos') && (
                     <Video
-                        style={[styles.postMedia, {height:'30%'}]}
+                        style={styles.postMedia}
                         source={getSupabaseFileUrl(item?.file)}
                         useNativeControls
                         resizeMode='cover'
