@@ -69,3 +69,33 @@ export const uploadFile = async(folderName, fileUri, isImg=true)=>{
 export const getFilePath = (folderName, isImg)=>{
     return `/${folderName}/${(new Date()).getTime()}${isImg? '.png':'.mp4'}`
 }
+
+export const getSupabaseFileUrl = filePath =>{
+    if(filePath){
+        return {uri: `https://ayyntwwnialofpjjwogq.supabase.co/storage/v1/object/public/uploads/${filePath}`}
+        
+    }
+    return null
+}
+
+export const fetchPosts = async (limit = 10) => {
+    try {
+      
+        const {data, error} = await supabase
+        .from('posts')
+        .select(`*, user: profiles (id, user_id, username, full_name)`)
+        .order('created_At', {ascending:false})
+        .limit(limit);
+
+        if(error){
+            console.error("Error fetching post files:", error);
+            return {success:false, msg:"Could fetch the post  "}
+        }
+
+        return {success:true, data:data};
+        
+    } catch (error) {
+      console.error("Error fetching post files:", error);
+      return {success:false, msg:"Could fetch the post  "}
+    }
+};
