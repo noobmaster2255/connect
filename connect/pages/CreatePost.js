@@ -68,7 +68,7 @@ const CreatePost = ({navigation, session, setSession}) => {
 
         console.log("post result", res)
         if(res){
-            Alert.alert("POST Added")
+            Alert.alert("Post uploaded sucessfully")
         }
 
     }
