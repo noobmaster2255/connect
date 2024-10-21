@@ -7,7 +7,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
@@ -31,9 +31,9 @@ const getProfile = async (userId) => {
 
 const fetchLikesCount = async (postId) => {
   const { count, error } = await supabase
-    .from('post_likes')
-    .select('id', { count: 'exact', head: true })
-    .eq('post_id', postId);
+    .from("post_likes")
+    .select("id", { count: "exact", head: true })
+    .eq("post_id", postId);
   if (error) {
     console.error("Error fetching likes count:", error.message);
     return 0;
@@ -43,9 +43,9 @@ const fetchLikesCount = async (postId) => {
 
 const fetchCommentsCount = async (postId) => {
   const { count, error } = await supabase
-    .from('comments')
-    .select('id', { count: 'exact', head: true })
-    .eq('post_id', postId);
+    .from("comments")
+    .select("id", { count: "exact", head: true })
+    .eq("post_id", postId);
   if (error) {
     console.error("Error fetching comments count:", error.message);
     return 0;
@@ -83,24 +83,32 @@ const ProfilePage = ({ navigation, session, setSession }) => {
         throw new Error(error.message);
       }
 
-      const postsData = await Promise.all(data.map(async (post) => {
-        const file = post.file ? supabase.storage.from("uploads").getPublicUrl(post.file).data.publicUrl : null;
-        const likesCount = await fetchLikesCount(post.id);
-        const commentsCount = await fetchCommentsCount(post.id);
+      const postsData = await Promise.all(
+        data.map(async (post) => {
+          const file = post.file
+            ? supabase.storage.from("uploads").getPublicUrl(post.file).data.publicUrl
+            : null;
+          const likesCount = await fetchLikesCount(post.id);
+          const commentsCount = await fetchCommentsCount(post.id);
 
-        return {
-          id: post.id,
-          image: file,
-          caption: post.body,
-          likes: likesCount,
-          comments: commentsCount,
-        };
-      }));
+          return {
+            id: post.id,
+            image: file,
+            caption: post.body,
+            likes: likesCount,
+            comments: commentsCount,
+          };
+        })
+      );
 
-      const imageUrls = await Promise.all(data.map(async (post) => {
-        const file = post.file ? supabase.storage.from("uploads").getPublicUrl(post.file).data.publicUrl : null;
-        return { id: post.id, imageUrl: file };
-      }));
+      const imageUrls = await Promise.all(
+        data.map(async (post) => {
+          const file = post.file
+            ? supabase.storage.from("uploads").getPublicUrl(post.file).data.publicUrl
+            : null;
+          return { id: post.id, imageUrl: file };
+        })
+      );
 
       setPosts(postsData);
       setImages(imageUrls);
@@ -120,13 +128,9 @@ const ProfilePage = ({ navigation, session, setSession }) => {
     return (
       <TouchableOpacity
         style={styles.imageContainer}
-        onPress={() => navigation.navigate('PostDetail', { post: item })}
+        onPress={() => navigation.navigate("PostDetail", { post: item })}
       >
-        <Image
-          source={{ uri: item.image }}
-          style={styles.gridImage}
-          resizeMode="cover"
-        />
+        <Image source={{ uri: item.image }} style={styles.gridImage} resizeMode="cover" />
       </TouchableOpacity>
     );
   };
@@ -142,39 +146,46 @@ const ProfilePage = ({ navigation, session, setSession }) => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.profileHeader}>
-          <Image
-            source={
-              profile?.profile_image_url
-                ? { uri: profile.profile_image_url }
-                : require("../assets/images/Konnect_vector.png")
-            }
-            style={styles.profileImage}
-          />
-          <Text style={styles.profileName}>{profile.full_name || "John Doe"}</Text>
-          <Text style={styles.profileUsername}>
-            @{profile.username || "Please set a username."}
-          </Text>
-          <Text style={styles.profileBio}>{profile.bio || ""}</Text>
-          <Button title="Edit Profile" onPress={() => navigation.navigate("EditProfile")} />
-        </View>
+        <View style={styles.container}>
+          <View style={styles.profileHeader}>
+            <View>
+              <Image
+                source={
+                  profile?.profile_image_url
+                    ? { uri: profile.profile_image_url }
+                    : require("../assets/images/profileimg.jpeg")
+                }
+                style={styles.profileImage}
+              />
+            </View>
 
-        <View style={styles.profileDetails}>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailNumber}>{profile.post_count || 0}</Text>
-            <Text style={styles.detailLabel}>Posts</Text>
+            <Text style={styles.profileName}>{profile.full_name || "John Doe"}</Text>
+            <Text style={styles.profileUsername}>
+              @{profile.username || "Please set a username."}
+            </Text>
+            <Text style={styles.profileBio}>{profile.bio || ""}</Text>
           </View>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailNumber}>{profile.connection_count || 180}</Text>
-            <Text style={styles.detailLabel}>Following</Text>
-          </View>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailNumber}>0</Text>
-            <Text style={styles.detailLabel}>Followers</Text>
+
+          <View style={styles.profileDetails}>
+            <View style={styles.detailItem}>
+              <Text style={styles.detailNumber}>{profile.post_count || 0}</Text>
+              <Text style={styles.detailLabel}>Posts</Text>
+            </View>
+            <View style={styles.detailItem}>
+              <Text style={styles.detailNumber}>{profile.connection_count || 180}</Text>
+              <Text style={styles.detailLabel}>Following</Text>
+            </View>
+            <View style={styles.detailItem}>
+              <Text style={styles.detailNumber}>0</Text>
+              <Text style={styles.detailLabel}>Followers</Text>
+            </View>
           </View>
         </View>
+        <TouchableOpacity onPress={() => navigation.navigate("EditProfile")} style={styles.editbtn}>
+          <Text style={styles.btnText}>Edit Profile</Text>
+        </TouchableOpacity>
 
-        <View style={styles.postsSection} contentContainerStyle={styles.gridContainer}>
+        <View style={styles.postsSection}>
           <Text style={styles.sectionTitle}>Posts</Text>
         </View>
 
@@ -191,16 +202,25 @@ const ProfilePage = ({ navigation, session, setSession }) => {
   );
 };
 
-const windowWidth = (Dimensions.get("window").width) - 5;
+const windowWidth = Dimensions.get("window").width - 5;
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#fff",
   },
+  container: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    width: windowWidth,
+  },
   profileHeader: {
-    alignItems: "center",
-    marginBottom: 20,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    justifyContent: "center",
   },
   profileImage: {
     width: 100,
@@ -209,17 +229,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   profileName: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: "bold",
     marginBottom: 5,
   },
   profileUsername: {
-    fontSize: 16,
+    fontSize: 14,
     color: "gray",
     marginBottom: 5,
   },
   profileBio: {
-    fontSize: 14,
+    fontSize: 12,
     color: "gray",
     marginBottom: 10,
     textAlign: "center",
@@ -227,37 +247,55 @@ const styles = StyleSheet.create({
   profileDetails: {
     flexDirection: "row",
     justifyContent: "space-around",
-    width: "100%",
-    marginBottom: 20,
+    width: "60%",
+    marginTop: 25,
   },
   detailItem: {
     alignItems: "center",
   },
   detailNumber: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: "bold",
   },
   detailLabel: {
-    fontSize: 14,
+    fontSize: 12,
     color: "gray",
   },
+  editbtn: {
+    width: "auto",
+    borderWidth: 1,
+    borderColor: "#ffad73",
+    borderRadius: 5,
+    padding: 10,
+    backgroundColor: "white",
+    alignItems: "center",
+    marginHorizontal: 10,
+    alignSelf: "flex-start",
+  },
+  btnText: {
+    color: "#ffad73",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
   postsSection: {
-    width: "100%",
+    width: "auto",
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    marginHorizontal: 10,
+    alignItems: "center",
   },
   sectionTitle: {
-    fontSize: 18,
+    textAlign: "center",
+    fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 10,
+    width: "100%",
   },
   imageGrid: {
     width: "100%",
     padding: 5,
   },
   gridContainer: {
-    alignItems: 'flex-start',
-    justifyContent: 'center',
+    alignItems: "flex-start",
+    justifyContent: "center",
     paddingBottom: 10,
   },
   imageContainer: {
@@ -272,11 +310,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     resizeMode: "contain",
-  },
-
-  gridContainer: {
-    alignItems:'flex-start',
-    justifyContent:'center',
   },
 });
 
