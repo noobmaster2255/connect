@@ -3,7 +3,6 @@ import AppButton from "../Components/Button/Button";
 import { supabase } from "../supabase";
 import ProfilePage from "./Profile";
 import CommentOverlay from "../Components/CommentOverlay/CommentOverlay";
-import { useState } from "react";
 import { useEffect, useState } from "react";
 import { fetchPosts } from '../Components/postService';
 import PostCard from "../Components/PostCard/PostCard";
