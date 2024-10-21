@@ -6,6 +6,7 @@ import CommentOverlay from "../Components/CommentOverlay/CommentOverlay";
 import { useEffect, useState } from "react";
 import { fetchPosts } from '../Components/postService';
 import PostCard from "../Components/PostCard/PostCard";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 let limit = 0;
 export default function Home({navigation, session, setSession}){
