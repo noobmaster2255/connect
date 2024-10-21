@@ -18,10 +18,11 @@ import CommentOverlay from "../Components/CommentOverlay/CommentOverlay";
 const PostDetail = ({ route }) => {
   const navigation = useNavigation();
   const { post } = route.params;
-  const [likesCount, setLikesCount] = useState(""); // count
-  const [commentsCount, setCommentCount] = useState(""); // count
+  const [likesCount, setLikesCount] = useState(""); //count
+  const [commentsCount, setCommentCount] = useState(""); //count
   const [userLiked, setIsUserLiked] = useState(false);
   const [isCommentVisible, setIsCommentVisible] = useState(false);
+
 
   const handleEditPost = () => {
     navigation.navigate("EditPost", { post });
@@ -58,13 +59,14 @@ const PostDetail = ({ route }) => {
       .select("id", { count: "exact" })
       .eq("post_id", postId)
       .eq("userId", sessionData.data.session.user.id);
+    console.log("Count: ", count);
     if (count > 0) {
       setIsUserLiked(true);
+      Icon()
     } else {
       setIsUserLiked(false);
     }
   };
-
   const Icon = () => {
     if (userLiked) {
       return <Ionicons name="heart" size={20} color={"red"} />;
@@ -75,31 +77,13 @@ const PostDetail = ({ route }) => {
 
   const handleComment = () => {
     setIsCommentVisible((previous) => !previous);
-  };
-
+    fetchCommentsCount(post.id);
+  }
   useEffect(() => {
     fetchLikesCount(post.id);
     fetchCommentsCount(post.id);
     fetchUserLiked(post.id);
-
-    // Subscribe to real-time comment changes
-    const subscription = supabase
-      .channel("comments-count-channel")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "comments", filter: `post_id=eq.${post.id}` },
-        () => {
-          // Increment the comment count whenever a new comment is added
-          setCommentCount((prevCount) => prevCount + 1);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(subscription); // Clean up the subscription when the component unmounts
-    };
-  }, [post.id]);
-
+  }, [commentsCount]);
   return (
     <View style={styles.container}>
       <Image source={{ uri: post.image }} style={styles.image} />
@@ -111,11 +95,13 @@ const PostDetail = ({ route }) => {
               if (userLiked) {
                 removeLike(post.id);
                 setLikesCount((previousCount) => previousCount - 1);
-                setIsUserLiked(false);
+                setIsUserLiked((previous) => !previous)
+                Icon();
               } else {
                 addLike(post.id);
                 setLikesCount((previousCount) => previousCount + 1);
-                setIsUserLiked(true);
+                setIsUserLiked((previous) => !previous)
+                Icon();
               }
             }}
           >
@@ -150,13 +136,7 @@ const PostDetail = ({ route }) => {
       <ScrollView style={styles.captionContainer}>
         <Text>{post.caption}</Text>
       </ScrollView>
-      <CommentOverlay
-        visible={isCommentVisible}
-        onClose={() => {
-          setIsCommentVisible(false);
-        }}
-        postId={post.id}
-      />
+      <CommentOverlay visible={isCommentVisible} onClose={()=>{setIsCommentVisible(false)}} postId={post.id}/>
     </View>
   );
 };
@@ -181,8 +161,8 @@ const styles = StyleSheet.create({
   action: {
     paddingTop: 10,
     paddingBottom: 10,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   actionButton: {
     padding: 3,
