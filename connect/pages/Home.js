@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, FlatList } from "react-native";
+import React,{ StyleSheet, View, Text, FlatList } from "react-native";
 import AppButton from "../Components/Button/Button";
 import { supabase } from "../supabase";
 import ProfilePage from "./Profile";
@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { fetchPosts } from '../Components/postService';
 import PostCard from "../Components/PostCard/PostCard";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { useFocusEffect } from "@react-navigation/native";
+
 
 let limit = 0;
 export default function Home({navigation, session, setSession}){
@@ -19,6 +21,12 @@ export default function Home({navigation, session, setSession}){
     useEffect(() =>{
         getPosts();
     }, [])
+
+    // useFocusEffect(
+    //     React.useCallback(() => {
+    //         getPosts();
+    //     }, [])
+    // );
 
     const getPosts = async()=>{
 
