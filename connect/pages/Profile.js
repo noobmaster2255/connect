@@ -29,29 +29,6 @@ const getProfile = async (userId) => {
   }
 };
 
-const fetchLikesCount = async (postId) => {
-  const { count, error } = await supabase
-    .from('post_likes')
-    .select('id', { count: 'exact', head: true })
-    .eq('post_id', postId);
-  if (error) {
-    console.error("Error fetching likes count:", error.message);
-    return 0;
-  }
-  return count;
-};
-
-const fetchCommentsCount = async (postId) => {
-  const { count, error } = await supabase
-    .from('comments')
-    .select('id', { count: 'exact', head: true })
-    .eq('post_id', postId);
-  if (error) {
-    console.error("Error fetching comments count:", error.message);
-    return 0;
-  }
-  return count;
-};
 
 const ProfilePage = ({ navigation, session, setSession }) => {
   const [profile, setProfile] = useState(null);
@@ -85,15 +62,10 @@ const ProfilePage = ({ navigation, session, setSession }) => {
 
       const postsData = await Promise.all(data.map(async (post) => {
         const file = post.file ? supabase.storage.from("uploads").getPublicUrl(post.file).data.publicUrl : null;
-        const likesCount = await fetchLikesCount(post.id);
-        const commentsCount = await fetchCommentsCount(post.id);
-
         return {
           id: post.id,
           image: file,
           caption: post.body,
-          likes: likesCount,
-          comments: commentsCount,
         };
       }));
 

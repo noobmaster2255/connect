@@ -69,3 +69,46 @@ export const uploadFile = async(folderName, fileUri, isImg=true)=>{
 export const getFilePath = (folderName, isImg)=>{
     return `/${folderName}/${(new Date()).getTime()}${isImg? '.png':'.mp4'}`
 }
+
+export const addLike = async (postId) => {
+    const sessionData = await supabase.auth.getSession();
+    console.log("This is session data",sessionData.data.session.user.id)
+    const { data, error } = await supabase.from('post_likes').insert([{'post_id': postId, 'userId': sessionData.data.session.user.id}])
+        console.log("Error",error)
+        console.log("Data", data)
+}
+
+export const removeLike = async (postId) => {
+    const sessionData = await supabase.auth.getSession();
+    const {data, error} = await supabase.from('post_likes').delete().eq('post_id', postId).eq('userId', sessionData.data.session.user.id);
+        console.log("Data", data)
+        console.log("Error",  error);
+}
+const getUserName = async (user_id)=>{
+    const {data,error} = await supabase.from('profiles').select('*').eq('user_id',user_id).single();
+    if(!error){
+        let obj = {
+            username: (data.username) ? data.username : data.full_name
+        }
+        return obj;
+    }
+    else {
+        console.log(error)
+    } 
+}
+
+export const addComment = async (postId, comment) => {
+    const sessionData = await supabase.auth.getSession();
+    let userName = await getUserName(sessionData.data.session.user.id);
+    const { data, error } = await supabase.from('comments').insert([{'userId': sessionData.data.session.user.id, 'comment_content': comment, 'username': userName.username, 'post_id': postId}])
+}
+// export const isUserLiked = async (postId) => {
+//     const sessionData = await supabase.auth.getSession();
+//     const { count } = await supabase.from('post_likes').select('id', {count: 'exact'}).eq('post_id', postId).eq('userId', sessionData.data.session.user.id);
+//     console.log("Count: ", count)
+//     if(count > 0){
+//         return true
+//     } else {
+//         return false
+//     }
+// }
