@@ -29,6 +29,8 @@ const getProfile = async (userId) => {
   }
 };
 
+
+
 const fetchLikesCount = async (postId) => {
   const { count, error } = await supabase
     .from("post_likes")
@@ -52,6 +54,7 @@ const fetchCommentsCount = async (postId) => {
   }
   return count;
 };
+
 
 const ProfilePage = ({ navigation, session, setSession }) => {
   const [profile, setProfile] = useState(null);
@@ -83,6 +86,16 @@ const ProfilePage = ({ navigation, session, setSession }) => {
         throw new Error(error.message);
       }
 
+
+      const postsData = await Promise.all(data.map(async (post) => {
+        const file = post.file ? supabase.storage.from("uploads").getPublicUrl(post.file).data.publicUrl : null;
+        return {
+          id: post.id,
+          image: file,
+          caption: post.body,
+        };
+      }));
+
       const postsData = await Promise.all(
         data.map(async (post) => {
           const file = post.file
@@ -100,6 +113,7 @@ const ProfilePage = ({ navigation, session, setSession }) => {
           };
         })
       );
+
 
       const imageUrls = await Promise.all(
         data.map(async (post) => {
