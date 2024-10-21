@@ -37,6 +37,26 @@ const EditProfile = ({ navigation, session, setSession }) => {
   }, []);
 
   const handleSave = async () => {
+    if (!username.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Update Failed",
+        text2: "Username cannot be empty.",
+        position: "bottom",
+      });
+      return;
+    }
+
+    if (!fullName.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Update Failed",
+        text2: "Full Name cannot be empty.",
+        position: "bottom",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const {
@@ -64,6 +84,8 @@ const EditProfile = ({ navigation, session, setSession }) => {
           text2: "Your profile has been successfully updated!",
           position: "bottom",
         });
+
+        navigation.goBack();
 
       }
     } catch (error) {

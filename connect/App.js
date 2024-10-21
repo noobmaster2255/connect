@@ -6,7 +6,7 @@ import Login from "./pages/Login.js";
 import WelcomeScreen from "./pages/Welcome.js";
 import { StatusBar } from "expo-status-bar";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { StyleSheet, Text, View } from "react-native";
+import { LogBox, StyleSheet, Text, View } from "react-native";
 import Profile from "./pages/Profile";
 import { supabase } from "./supabase.js";
 import { Session } from "@supabase/supabase-js";
@@ -15,6 +15,8 @@ import Toast from "react-native-toast-message";
 import EditProfile from "./pages/EditProfile.js";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import CreatePost from "./pages/CreatePost.js";
+import PostDetail from "./pages/PostDetail.js";
+import EditPost from "./pages/EditPost.js";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -28,9 +30,17 @@ function ProfileStack({ session , setSession}) {
       <Stack.Screen name="EditProfile" options={{ headerShown: false }}>
         {(props) => <EditProfile {...props} session={session} setSession={setSession}/>}
       </Stack.Screen>
+      <Stack.Screen name="PostDetail" options={{ headerShown: false }}>
+        {(props) => <PostDetail {...props} session={session} setSession={setSession}/>}
+      </Stack.Screen>
+      <Stack.Screen name="EditPost" options={{ headerShown: false }}>
+        {(props) => <EditPost {...props} session={session} setSession={setSession}/>}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }
+
+LogBox.ignoreLogs(['Warning: TNodeChildrenRenderer','Warning: MemoizedTNodeRenderer','Warning: TRenderEngineProvider'])
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -70,7 +80,7 @@ export default function App() {
             tabBarInactiveTintColor: "gray",
           })}
         >
-          <Tab.Screen name="Home">
+          <Tab.Screen name="Home" >
             {(props) => <Home {...props} session={session} setSession={setSession} />}
           </Tab.Screen>
           <Tab.Screen name="CreatePost">
