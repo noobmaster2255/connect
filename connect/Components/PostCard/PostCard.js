@@ -195,7 +195,7 @@ export default PostCard;
 
 const styles = StyleSheet.create({
     container: {
-        width: 400,
+        width: 370,
         marginBottom: 20,
         borderRadius: 20,
         padding: 15,

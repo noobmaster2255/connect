@@ -68,7 +68,11 @@ const CreatePost = ({navigation, session, setSession}) => {
 
         console.log("post result", res)
         if(res){
+
             Alert.alert("Post uploaded sucessfully")
+            // Alert.alert("POST Added")
+            navigation.navigate("Home");
+
         }
 
     }
