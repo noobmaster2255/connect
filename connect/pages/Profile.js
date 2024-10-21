@@ -87,14 +87,14 @@ const ProfilePage = ({ navigation, session, setSession }) => {
       }
 
 
-      const postsData = await Promise.all(data.map(async (post) => {
-        const file = post.file ? supabase.storage.from("uploads").getPublicUrl(post.file).data.publicUrl : null;
-        return {
-          id: post.id,
-          image: file,
-          caption: post.body,
-        };
-      }));
+      // const postsData = await Promise.all(data.map(async (post) => {
+      //   const file = post.file ? supabase.storage.from("uploads").getPublicUrl(post.file).data.publicUrl : null;
+      //   return {
+      //     id: post.id,
+      //     image: file,
+      //     caption: post.body,
+      //   };
+      // }));
 
       const postsData = await Promise.all(
         data.map(async (post) => {
