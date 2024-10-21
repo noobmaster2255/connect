@@ -15,7 +15,7 @@ import { createOrUpdatePost } from '../Components/postService';
 const CreatePost = ({navigation, session, setSession}) => {
 
     const user =  session.user;
-    console.log("User", session.user.user_metadata.full_name, session.user.id)
+    console.log("User createpost", session.user.user_metadata.full_name, session.user.id)
 
     const bodyRef = useRef("")
     const editorRef = useRef(null)
