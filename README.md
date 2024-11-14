@@ -23,7 +23,7 @@
 
 - Users can create a post.
 - Users can view the posts feed.
-- Users can like comment and share the post.
+- Users can like and comment
 - User can view posts on profile page.
   
 - Users can view the detailed post page and update.

@@ -116,9 +116,9 @@ const PostDetail = ({ route }) => {
           <Text>{commentsCount}</Text>
         </View>
         <View style={styles.action}>
-          <TouchableOpacity style={styles.actionButton}>
+          {/* <TouchableOpacity style={styles.actionButton}>
             <Ionicons name="share-social-outline" size={20} color={"black"} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <View style={styles.action}>
           <TouchableOpacity
