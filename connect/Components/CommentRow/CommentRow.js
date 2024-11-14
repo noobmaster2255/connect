@@ -1,7 +1,9 @@
 // CommentItem.js
 
+import { min } from "moment";
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
+import { getTimeAgo } from "../../utils/getTimeDifference";
 
 const CommentItem = ({ profileImage, username, comment , created_at}) => {
   return (
@@ -10,7 +12,7 @@ const CommentItem = ({ profileImage, username, comment , created_at}) => {
       <View style={styles.commentContent}>
         <Text style={styles.username}>{username}</Text>
         <Text style={styles.comment}>{comment}</Text>
-        <Text style={styles.comment}>{created_at}</Text>
+        <Text style={styles.comment}>{getTimeAgo(created_at)}</Text>
       </View>
     </View>
   );
