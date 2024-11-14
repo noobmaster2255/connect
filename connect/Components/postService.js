@@ -126,25 +126,64 @@ export const getSupabaseFileUrl = filePath =>{
     return null
 }
 
-export const fetchPosts = async (limit = 10) => {
+
+
+
+// Main function to fetch posts and handle real-time updates
+export const fetchPostsWithRealtimeUpdates = async (limit = 10, setPosts) => {
     try {
-      
-        const {data, error} = await supabase
-        .from('posts')
-        .select(`*, user: profiles (id, user_id, username, full_name)`)
-        .order('created_At', {ascending:false})
+      // Initial fetch of posts with user data
+      const { data, error } = await supabase
+        .from("posts")
+        .select(`*, user:profiles (id, user_id, username, full_name)`)
+        .order("created_At", { ascending: false })
         .limit(limit);
-
-        if(error){
-            console.error("Error fetching post files:", error);
-            return {success:false, msg:"Could fetch the post  "}
-        }
-
-        return {success:true, data:data};
-        
+  
+      if (error) {
+        console.error("Error fetching posts:", error);
+        return { success: false, msg: "Could not fetch posts" };
+      }
+  
+      // Set initial posts
+      setPosts(data);
+  
+      // Subscribe to real-time updates
+      const channel = supabase
+        .channel("posts-channel")
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "posts" }, async (payload) => {
+          const newPost = payload.new;
+          console.log("NEW POST" ,newPost)
+          // Fetch user profile if it's not present in the payload
+          if (!newPost.user) {
+            const { data: profile } = await supabase
+              .from("profiles")
+              .select("username, full_name")
+              .eq("user_id", newPost.userId)
+              .single();
+  
+            if (profile) {
+              newPost.user = profile; // Attach the profile data to the post
+            }
+          }
+  
+          // Update posts state with the new post
+          setPosts((prevPosts) => [newPost, ...prevPosts]);
+        })
+        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "posts" }, (payload) => {
+          const updatedPost = payload.new;
+          setPosts((prevPosts) =>
+            prevPosts.map((post) => (post.id === updatedPost.id ? { ...post, ...updatedPost } : post))
+          );
+        })
+        .on("postgres_changes", { event: "DELETE", schema: "public", table: "posts" }, (payload) => {
+          const deletedPostId = payload.old.id;
+          setPosts((prevPosts) => prevPosts.filter((post) => post.id !== deletedPostId));
+        })
+        .subscribe();
+  
+      return { success: true, data, channel };
     } catch (error) {
-      console.error("Error fetching post files:", error);
-      return {success:false, msg:"Could fetch the post  "}
+      console.error("Error in fetchPostsWithRealtimeUpdates:", error);
+      return { success: false, msg: "Could not fetch posts" };
     }
-};
-
+  };
