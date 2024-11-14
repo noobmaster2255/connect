@@ -18,6 +18,7 @@ import CreatePost from "./pages/CreatePost.js";
 import PostDetail from "./pages/PostDetail.js";
 import EditPost from "./pages/EditPost.js";
 import * as Notifications from "expo-notifications";
+import { subscribeComment, subscribeLike, subscribeToPost } from "./utils/notifications.js"
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -33,7 +34,13 @@ async function getPushNotificationPermission() {
   const token = await Notifications.getExpoPushTokenAsync({projectId: "5e3048f4-d26c-462f-8ae4-8b351c45e255"})
   console.log("Token : ",token.data);
 }
-
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 function ProfileStack({ session , setSession}) {
   return (
@@ -68,6 +75,15 @@ export default function App() {
     };
     getSession();
     getPushNotificationPermission();
+
+    const channels = subscribeToPost();
+    const channel = subscribeComment();
+    const likeChannel = subscribeLike();
+    return () => {
+      supabase.removeChannel(channels);
+      supabase.removeChannel(channel);
+      supabase.removeChannel(likeChannel);
+    }
   }, []);
 
   if (loading) {
