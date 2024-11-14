@@ -6,7 +6,7 @@ import Login from "./pages/Login.js";
 import WelcomeScreen from "./pages/Welcome.js";
 import { StatusBar } from "expo-status-bar";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { LogBox, StyleSheet, Text, View } from "react-native";
+import { Alert, LogBox, StyleSheet, Text, View } from "react-native";
 import Profile from "./pages/Profile";
 import { supabase } from "./supabase.js";
 import { Session } from "@supabase/supabase-js";
@@ -17,9 +17,23 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import CreatePost from "./pages/CreatePost.js";
 import PostDetail from "./pages/PostDetail.js";
 import EditPost from "./pages/EditPost.js";
+import * as Notifications from "expo-notifications";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
+//permission for notifications
+async function getPushNotificationPermission() {
+  const {status} = await Notifications.requestPermissionsAsync();
+  if(status !== "granted"){
+    Alert.alert("Permission Required!", "Enable permission to receive notifications.");
+    return;
+  }
+
+  const token = await Notifications.getExpoPushTokenAsync({projectId: "5e3048f4-d26c-462f-8ae4-8b351c45e255"})
+  console.log("Token : ",token.data);
+}
+
 
 function ProfileStack({ session , setSession}) {
   return (
@@ -53,6 +67,7 @@ export default function App() {
       setLoading(false);
     };
     getSession();
+    getPushNotificationPermission();
   }, []);
 
   if (loading) {
