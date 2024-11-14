@@ -4,7 +4,7 @@ import { supabase } from "../supabase";
 import ProfilePage from "./Profile";
 import CommentOverlay from "../Components/CommentOverlay/CommentOverlay";
 import { useEffect, useState } from "react";
-import { fetchPosts } from '../Components/postService';
+import { fetchPosts, fetchPostsWithRealtimeUpdates } from '../Components/postService';
 import PostCard from "../Components/PostCard/PostCard";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useFocusEffect } from "@react-navigation/native";
@@ -13,7 +13,8 @@ import { useFocusEffect } from "@react-navigation/native";
 let limit = 10;
 export default function Home({navigation, session, setSession}){
 
-    const [posts, setPosts] = useState([])
+    const [posts, setPosts] = useState([]);
+    const [channel, setChannel] = useState(null);
 
     const user =  session.user;
     console.log("User Home", session.user.user_metadata.full_name, session.user.id)
@@ -30,12 +31,8 @@ export default function Home({navigation, session, setSession}){
 
     const getPosts = async()=>{
         console.log("posts", limit)
-        let res = await fetchPosts(limit);
-        
-        if(res.success){
-            setPosts(res.data)
-        }
-
+        const {channel} = await fetchPostsWithRealtimeUpdates(10, setPosts);
+        setChannel(channel)
     }
 
 
