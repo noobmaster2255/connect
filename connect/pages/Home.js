@@ -10,7 +10,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { useFocusEffect } from "@react-navigation/native";
 
 
-let limit = 0;
+let limit = 10;
 export default function Home({navigation, session, setSession}){
 
     const [posts, setPosts] = useState([])
@@ -29,8 +29,6 @@ export default function Home({navigation, session, setSession}){
     // );
 
     const getPosts = async()=>{
-
-        limit = limit+10;
         console.log("posts", limit)
         let res = await fetchPosts(limit);
         
@@ -48,6 +46,7 @@ export default function Home({navigation, session, setSession}){
 
             <FlatList
                 data={posts}
+                onEndReached={() => {limit += 10; getPosts();}}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.listStyle}
                 keyExtractor={item => item.id.toString()}
