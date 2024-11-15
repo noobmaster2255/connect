@@ -29,8 +29,6 @@ const getProfile = async (userId) => {
   }
 };
 
-
-
 const fetchLikesCount = async (postId) => {
   const { count, error } = await supabase
     .from("post_likes")
@@ -55,23 +53,28 @@ const fetchCommentsCount = async (postId) => {
   return count;
 };
 
-
-const ProfilePage = ({ navigation, session, setSession }) => {
+const ProfilePage = ({ navigation, route }) => {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [posts, setPosts] = useState([]);
   const [images, setImages] = useState([]);
+  const { userId } = route || {};
 
   const fetchProfile = async () => {
     try {
-      const { data: userData, error } = await supabase.auth.getUser();
-      if (error) throw error;
+      let id = userId;
 
-      if (userData) {
-        const profileData = await getProfile(userData.user.id);
-        setProfile(profileData);
-        await fetchPostDetails(userData.user.id);
+      if (!id) {
+        const { data: userData, error } = await supabase.auth.getUser();
+        if (error) throw error;
+        id = userData.user.id;
       }
+
+      console.log(userId, "lllll", id); 
+
+      const profileData = await getProfile(id);
+      setProfile(profileData);
+      await fetchPostDetails(id);
     } catch (error) {
       console.error("Error fetching profile:", error.message);
     } finally {
@@ -79,13 +82,13 @@ const ProfilePage = ({ navigation, session, setSession }) => {
     }
   };
 
-  const fetchPostDetails = async (userId) => {
+  const fetchPostDetails = async (id) => {
     try {
-      const { data, error } = await supabase.from("posts").select("*").eq("userId", userId);
+      console.log("aaaa", id);
+      const { data, error } = await supabase.from("posts").select("*").eq("userId", id);
       if (error) {
         throw new Error(error.message);
       }
-
 
       // const postsData = await Promise.all(data.map(async (post) => {
       //   const file = post.file ? supabase.storage.from("uploads").getPublicUrl(post.file).data.publicUrl : null;
@@ -113,7 +116,6 @@ const ProfilePage = ({ navigation, session, setSession }) => {
           };
         })
       );
-
 
       const imageUrls = await Promise.all(
         data.map(async (post) => {
