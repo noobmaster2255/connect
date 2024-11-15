@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   TextInput,
@@ -9,25 +9,34 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { supabase } from "../supabase";
+import SearchedUserProfile from "./SearchedUserProfile";
+import { Button } from "@rneui/themed";
+import { useIsFocused } from "@react-navigation/native";
 
 const SearchUsers = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const isFocused = useIsFocused(); 
 
+  useEffect(() => {
+    if (isFocused) {
+      setSelectedUserId(null);
+    }
+  }, [isFocused]); 
   const searchUsers = async (query) => {
     if (query.trim() === "") {
       setSuggestions([]);
       return;
     }
-
     setIsLoading(true);
 
     try {
       const { data, error } = await supabase
         .from("profiles")
         .select("user_id, username, full_name")
-        .ilike("username", `%${query}%`); 
+        .ilike("username", `%${query}%`);
 
       if (error) {
         console.error("Error searching users:", error.message);
@@ -48,9 +57,9 @@ const SearchUsers = ({ navigation }) => {
   };
 
   const handleUserSelect = (userId) => {
-    setSearchQuery(""); 
-    setSuggestions([]);   
-    navigation.navigate("Profile", { userId });
+    setSearchQuery("");
+    setSuggestions([]);
+    setSelectedUserId(userId);
   };
 
   const renderItem = ({ item }) => (
@@ -60,6 +69,13 @@ const SearchUsers = ({ navigation }) => {
     </TouchableOpacity>
   );
 
+  if (selectedUserId) {
+    return (
+      <View style={styles.container}>
+        {selectedUserId && <SearchedUserProfile userId={selectedUserId} />}
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <TextInput
@@ -83,6 +99,8 @@ const SearchUsers = ({ navigation }) => {
       />
     </View>
   );
+
+  
 };
 
 const styles = StyleSheet.create({
