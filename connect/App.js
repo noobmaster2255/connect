@@ -19,6 +19,7 @@ import PostDetail from "./pages/PostDetail.js";
 import EditPost from "./pages/EditPost.js";
 import * as Notifications from "expo-notifications";
 import { subscribeComment, subscribeLike, subscribeToPost } from "./utils/notifications.js"
+import SearchUsers from "./pages/SearchUsers.js";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -42,11 +43,11 @@ Notifications.setNotificationHandler({
   }),
 });
 
-function ProfileStack({ session , setSession}) {
+function ProfileStack({ session = null , setSession = null, route}) {
   return (
     <Stack.Navigator>
       <Stack.Screen name="ProfileScreen" options={{ headerShown: false }}>
-        {(props) => <Profile {...props} session={session} />}
+        {(props) => <Profile {...props} session={session} route={route.params}/>}
       </Stack.Screen>
       <Stack.Screen name="EditProfile" options={{ headerShown: false }}>
         {(props) => <EditProfile {...props} session={session} setSession={setSession}/>}
@@ -101,6 +102,8 @@ export default function App() {
                 iconName = "home";
               } else if (route.name === "Profile") {
                 iconName = "person";
+              } else if (route.name === "Search") {
+                iconName = "search";
               } else if (route.name === "CreatePost") {
                 iconName = "add-circle";
               }
@@ -117,8 +120,13 @@ export default function App() {
           <Tab.Screen name="CreatePost">
             {(props) => <CreatePost {...props} session={session} setSession={setSession}/>}
           </Tab.Screen>
+          <Tab.Screen
+            name="Search"
+            component={SearchUsers}
+            options={{ headerShown: true }}
+          />
           <Tab.Screen name="Profile">
-            {(props) => <ProfileStack {...props} session={session} setSession={setSession}/>}
+            {(props) => <ProfileStack {...props} session={session} setSession={setSession} />}
           </Tab.Screen>
         </Tab.Navigator>
       ) : (
