@@ -12,6 +12,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { supabase } from "../supabase";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 const getProfile = async (userId) => {
   try {
@@ -154,22 +155,59 @@ const SearchedUserProfile = ({ navigation, userId }) => {
   const fetchFriendStatus = async (currentUserId) => {
     try {
       // Check if they are already friends
-      const status = await checkFriendRequestStatus(currentUserId, userId);
-      setIsFriend(status);
-      setButtonText(status ? "Unfriend" : "Send Friend Request");
-  
-      // Check if there's an active friend request
-      const requestStatus = await checkFriendRequestStatus(currentUserId, userId);
-  
-      if (requestStatus) {
-        if (requestStatus === "Sent") {
-          setButtonText("Cancel Friend Request");
-        } else if (requestStatus === "Received") {
-          setButtonText("Accept Friend Request");
-        }
+      const { data: friends, error: friendError } = await supabase
+        .from("friends")
+        .select("*")
+        .or(`user_id_1.eq.${currentUserId},user_id_2.eq.${currentUserId}`)
+        .or(`user_id_1.eq.${userId},user_id_2.eq.${userId}`);
+        
+      if (friendError) {
+        console.error("Error checking friendship status:", friendError.message);
+        return;
       }
   
-      setLoadingFriendStatus(false); // Finished loading friend status
+      const isAlreadyFriend = friends.some(
+        (friend) =>
+          (friend.user_id_1 === currentUserId && friend.user_id_2 === userId) ||
+          (friend.user_id_1 === userId && friend.user_id_2 === currentUserId)
+      );
+  
+      if (isAlreadyFriend) {
+        setIsFriend(true);
+        setButtonText("Unfriend");
+        setLoadingFriendStatus(false);
+        return;
+      }
+  
+      // Check if there's an active friend request
+      const { data: requests, error: requestError } = await supabase
+        .from("friend_requests")
+        .select("*")
+        .or(`sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`)
+        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
+  
+      if (requestError) {
+        console.error("Error checking friend request status:", requestError.message);
+        return;
+      }
+  
+      const activeRequest = requests.find(
+        (req) =>
+          (req.sender_id === currentUserId && req.receiver_id === userId) ||
+          (req.sender_id === userId && req.receiver_id === currentUserId)
+      );
+  
+      if (activeRequest) {
+        if (activeRequest.sender_id === currentUserId) {
+          setButtonText("Cancel Friend Request");
+        } else if (activeRequest.receiver_id === currentUserId) {
+          setButtonText("Accept Friend Request");
+        }
+      } else {
+        setButtonText("Send Friend Request");
+      }
+  
+      setLoadingFriendStatus(false);
     } catch (error) {
       console.error("Error fetching friend status:", error.message);
     }
@@ -225,7 +263,7 @@ const SearchedUserProfile = ({ navigation, userId }) => {
           .delete()
           .or(`sender_id.eq.${userId},receiver_id.eq.${userData.user.id}`);
   
-        setButtonText("Unfriend");
+        setButtonText("Send Friend Request");
       } else {
         // Send friend request action
         const { error } = await supabase
@@ -236,6 +274,13 @@ const SearchedUserProfile = ({ navigation, userId }) => {
           console.error("Error sending friend request:", error.message);
           return;
         }
+
+        Toast.show({
+          type: "success",
+          text1: "Friend Request Sent",
+          position: "bottom",
+        });
+
         setButtonText("Cancel Friend Request");
       }
     } catch (error) {
@@ -303,12 +348,9 @@ const SearchedUserProfile = ({ navigation, userId }) => {
             </View>
           </View>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate("EditProfile")} style={styles.editbtn}>
-          <Text style={styles.btnText}>Edit Profile</Text>
-        </TouchableOpacity>
 
         {/* Friend Request Button */}
-        <TouchableOpacity onPress={handleFriendRequest} style={styles.editbtn}>
+        <TouchableOpacity onPress={handleFriendRequest} style={styles.dynamicBtn}>
           <Text style={styles.btnText}>{buttonText}</Text>
         </TouchableOpacity>
 
@@ -369,15 +411,16 @@ const styles = StyleSheet.create({
   detailLabel: {
     color: "gray",
   },
-  editbtn: {
-    backgroundColor: "#2D9CDB",
+  dynamicBtn: {
+    width: "auto",
+    borderRadius: 5,
+    backgroundColor: "#ffad73",
     padding: 10,
     marginVertical: 10,
-    borderRadius: 5,
     alignItems: "center",
   },
   btnText: {
-    color: "white",
+    color: "black",
     fontWeight: "bold",
   },
   postsSection: {

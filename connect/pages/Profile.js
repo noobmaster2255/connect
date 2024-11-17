@@ -9,10 +9,11 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import { useState, useCallback } from "react";
+import { React, useState, useCallback, useLayoutEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { supabase } from "../supabase";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
+import { Ionicons } from "@expo/vector-icons";
 
 const getProfile = async (userId) => {
   try {
@@ -192,9 +193,16 @@ const ProfilePage = ({ navigation, session, setSession }) => {
             </View>
           </View>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate("EditProfile")} style={styles.editbtn}>
-          <Text style={styles.btnText}>Edit Profile</Text>
-        </TouchableOpacity>
+        <View style={styles.editBtnsContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate("EditProfile")} style={styles.editbtn}>
+            <Text style={styles.btnText}>Edit Profile</Text>
+          </TouchableOpacity>
+        
+          <TouchableOpacity onPress={() => navigation.navigate("FriendRequests")} style={styles.friendRequestsBtn}>
+            <Ionicons name="people-outline" size={24} color="black" />
+            <Text style={styles.btnText}>Friend Requests</Text>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.postsSection}>
           <Text style={styles.sectionTitle}>Posts</Text>
@@ -275,18 +283,30 @@ const styles = StyleSheet.create({
   editbtn: {
     width: "auto",
     borderWidth: 1,
-    borderColor: "#ffad73",
+    backgroundColor: "#ffad73",
     borderRadius: 5,
     padding: 10,
-    backgroundColor: "white",
     alignItems: "center",
     marginHorizontal: 10,
-    alignSelf: "flex-start",
+    marginVertical: 10,
+  },
+  friendRequestsBtn: {
+    width: "auto",
+    borderWidth: 1,
+    backgroundColor: "#ffad73",
+    borderRadius: 5,
+    padding: 10,
+    marginHorizontal: 10,
+    marginVertical: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center"
   },
   btnText: {
-    color: "#ffad73",
+    color: "black",
     fontWeight: "bold",
     fontSize: 16,
+    marginLeft: 5,
   },
   postsSection: {
     width: "auto",
