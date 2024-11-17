@@ -40,6 +40,7 @@ const fetchLikesCount = async (postId) => {
     console.error("Error fetching likes count:", error.message);
     return 0;
   }
+
   return count;
 };
 
@@ -187,11 +188,7 @@ const ProfilePage = ({ navigation, session, setSession }) => {
             </View>
             <View style={styles.detailItem}>
               <Text style={styles.detailNumber}>{profile.connection_count || 180}</Text>
-              <Text style={styles.detailLabel}>Following</Text>
-            </View>
-            <View style={styles.detailItem}>
-              <Text style={styles.detailNumber}>0</Text>
-              <Text style={styles.detailLabel}>Followers</Text>
+              <Text style={styles.detailLabel}>Friends</Text>
             </View>
           </View>
         </View>
