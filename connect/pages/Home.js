@@ -9,59 +9,57 @@ import PostCard from "../Components/PostCard/PostCard";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useFocusEffect } from "@react-navigation/native";
 
-
 let limit = 10;
 export default function Home({navigation, session, setSession}){
+  const [posts, setPosts] = useState([]);
+  const [channel, setChannel] = useState(null);
 
-    const [posts, setPosts] = useState([]);
-    const [channel, setChannel] = useState(null);
+  const user =  session.user;
+  console.log("User Home", session.user.user_metadata.full_name, session.user.id)
 
-    const user =  session.user;
-    console.log("User Home", session.user.user_metadata.full_name, session.user.id)
+  useEffect(() =>{
+    getPosts();
+  }, [])
 
-    useEffect(() =>{
-        getPosts();
-    }, [])
+  // useFocusEffect(
+  //     React.useCallback(() => {
+  //         getPosts();
+  //     }, [])
+  // );
 
-    // useFocusEffect(
-    //     React.useCallback(() => {
-    //         getPosts();
-    //     }, [])
-    // );
+  const getPosts = async()=>{
+    console.log("posts", limit)
+    const {channel} = await fetchPostsWithRealtimeUpdates(10, setPosts);
+    setChannel(channel)
+  }
 
-    const getPosts = async()=>{
-        console.log("posts", limit)
-        const {channel} = await fetchPostsWithRealtimeUpdates(10, setPosts);
-        setChannel(channel)
-    }
-
-
-    
-    return(
+  return(
     <View style={styles.container}>
-        {/* <Text style={{color: "#ff0000"}}>Welcome</Text> */}
+      {/* <Text style={{color: "#ff0000"}}>Welcome</Text> */}
 
-            <FlatList
-                data={posts}
-                onEndReached={() => {limit += 10; getPosts();}}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.listStyle}
-                keyExtractor={item => item.id.toString()}
-                renderItem={({ item }) => <PostCard item={item} currentUser={user} />
-                }
-            />
+      <FlatList
+        data={posts}
+        onEndReached={() => {limit += 10; getPosts();}}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listStyle}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({ item }) => <PostCard item={item} currentUser={user} /> }
+      />
     </View>
-    );
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    listStyle:{
-        paddingTop:20,
-        paddingHorizontal:10
-    }
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  icon: {
+    marginRight: 10,
+},
+  listStyle:{
+    paddingTop:20,
+    paddingHorizontal:10
+  }
 })

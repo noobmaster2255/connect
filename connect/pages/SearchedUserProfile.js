@@ -3,16 +3,16 @@ import {
   View,
   Text,
   Image,
-  Button,
   SafeAreaView,
   ActivityIndicator,
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { supabase } from "../supabase";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 const getProfile = async (userId) => {
   try {
@@ -53,11 +53,44 @@ const fetchCommentsCount = async (postId) => {
   return count;
 };
 
+const checkFriendRequestStatus = async (currentUserId, searchedUserId) => {
+  try {
+    const { data, error } = await supabase
+      .from("friend_requests")
+      .select("*")
+      .or(`sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`)
+      .or(`sender_id.eq.${searchedUserId},receiver_id.eq.${searchedUserId}`);
+
+    if (error) {
+      console.error("Error checking friend request status:", error.message);
+      return null;
+    }
+
+    // Check if there's an active friend request between the two users
+    const request = data.find(
+      (req) =>
+        (req.sender_id === currentUserId && req.receiver_id === searchedUserId) ||
+        (req.sender_id === searchedUserId && req.receiver_id === currentUserId)
+    );
+
+    if (request) {
+      return request.sender_id === currentUserId ? "Sent" : "Received"; // "Sent" or "Received" based on who sent the request
+    }
+
+    return null; // No active request
+  } catch (error) {
+    console.error("Error checking friend request status:", error.message);
+    return null;
+  }
+};
 const SearchedUserProfile = ({ navigation, userId }) => {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [posts, setPosts] = useState([]);
   const [images, setImages] = useState([]);
+  const [isFriend, setIsFriend] = useState(false); // State to track friend status
+  const [loadingFriendStatus, setLoadingFriendStatus] = useState(true); // State to handle loading state for friend status
+  const [buttonText, setButtonText] = useState("Send Friend Request");
 
   const fetchProfile = async () => {
     try {
@@ -68,6 +101,7 @@ const SearchedUserProfile = ({ navigation, userId }) => {
         const profileData = await getProfile(userId);
         setProfile(profileData);
         await fetchPostDetails(userId);
+        await fetchFriendStatus(userData.user.id); // Fetch the friend status after profile
       }
     } catch (error) {
       console.error("Error fetching profile:", error.message);
@@ -117,6 +151,142 @@ const SearchedUserProfile = ({ navigation, userId }) => {
     }
   };
 
+  const fetchFriendStatus = async (currentUserId) => {
+    try {
+      // Check if they are already friends
+      const { data: friends, error: friendError } = await supabase
+        .from("friends")
+        .select("*")
+        .or(`user_id_1.eq.${currentUserId},user_id_2.eq.${currentUserId}`)
+        .or(`user_id_1.eq.${userId},user_id_2.eq.${userId}`);
+        
+      if (friendError) {
+        console.error("Error checking friendship status:", friendError.message);
+        return;
+      }
+  
+      const isAlreadyFriend = friends.some(
+        (friend) =>
+          (friend.user_id_1 === currentUserId && friend.user_id_2 === userId) ||
+          (friend.user_id_1 === userId && friend.user_id_2 === currentUserId)
+      );
+  
+      if (isAlreadyFriend) {
+        setIsFriend(true);
+        setButtonText("Unfriend");
+        setLoadingFriendStatus(false);
+        return;
+      }
+  
+      // Check if there's an active friend request
+      const { data: requests, error: requestError } = await supabase
+        .from("friend_requests")
+        .select("*")
+        .or(`sender_id.eq.${currentUserId},receiver_id.eq.${currentUserId}`)
+        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
+  
+      if (requestError) {
+        console.error("Error checking friend request status:", requestError.message);
+        return;
+      }
+  
+      const activeRequest = requests.find(
+        (req) =>
+          (req.sender_id === currentUserId && req.receiver_id === userId) ||
+          (req.sender_id === userId && req.receiver_id === currentUserId)
+      );
+  
+      if (activeRequest) {
+        if (activeRequest.sender_id === currentUserId) {
+          setButtonText("Cancel Friend Request");
+        } else if (activeRequest.receiver_id === currentUserId) {
+          setButtonText("Accept Friend Request");
+        }
+      } else {
+        setButtonText("Send Friend Request");
+      }
+  
+      setLoadingFriendStatus(false);
+    } catch (error) {
+      console.error("Error fetching friend status:", error.message);
+    }
+  };
+
+  const handleFriendRequest = async () => {
+    try {
+      const { data: userData, error } = await supabase.auth.getUser();
+      if (error) throw error;
+  
+      const requestStatus = await checkFriendRequestStatus(userData.user.id, userId);
+  
+      if (isFriend) {
+        // Unfriend action (remove from friends)
+        const { error } = await supabase
+          .from("friends")
+          .delete()
+          .or(`user_id_1.eq.${userData.user.id},user_id_2.eq.${userData.user.id}`)
+          .or(`user_id_1.eq.${userId},user_id_2.eq.${userId}`);
+  
+        if (error) {
+          console.error("Error unfriending:", error.message);
+          return;
+        }
+        setIsFriend(false);
+        setButtonText("Send Friend Request");
+      } else if (requestStatus === "Sent") {
+        // Cancel friend request action
+        const { error } = await supabase
+          .from("friend_requests")
+          .delete()
+          .or(`sender_id.eq.${userData.user.id},receiver_id.eq.${userId}`);
+  
+        if (error) {
+          console.error("Error canceling friend request:", error.message);
+          return;
+        }
+        setButtonText("Send Friend Request");
+      } else if (requestStatus === "Received") {
+        // Accept friend request action
+        const { error } = await supabase
+          .from("friends")
+          .insert([{ user_id_1: userData.user.id, user_id_2: userId }]);
+  
+        if (error) {
+          console.error("Error accepting friend request:", error.message);
+          return;
+        }
+  
+        // Remove the request after accepting
+        await supabase
+          .from("friend_requests")
+          .delete()
+          .or(`sender_id.eq.${userId},receiver_id.eq.${userData.user.id}`);
+  
+        setButtonText("Send Friend Request");
+      } else {
+        // Send friend request action
+        const { error } = await supabase
+          .from("friend_requests")
+          .insert([{ sender_id: userData.user.id, receiver_id: userId }]);
+  
+        if (error) {
+          console.error("Error sending friend request:", error.message);
+          return;
+        }
+
+        Toast.show({
+          type: "success",
+          text1: "Friend Request Sent",
+          position: "bottom",
+        });
+
+        setButtonText("Cancel Friend Request");
+      }
+    } catch (error) {
+      console.error("Error handling friend request:", error.message);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       setIsLoading(true);
@@ -135,7 +305,7 @@ const SearchedUserProfile = ({ navigation, userId }) => {
     );
   };
 
-  if (isLoading) {
+  if (isLoading || loadingFriendStatus) {
     return (
       <SafeAreaView>
         <ActivityIndicator size={"large"} color={"#0000ff"} />
@@ -173,14 +343,15 @@ const SearchedUserProfile = ({ navigation, userId }) => {
             </View>
             <View style={styles.detailItem}>
               <Text style={styles.detailNumber}>{profile.connection_count || 180}</Text>
-              <Text style={styles.detailLabel}>Following</Text>
-            </View>
-            <View style={styles.detailItem}>
-              <Text style={styles.detailNumber}>0</Text>
-              <Text style={styles.detailLabel}>Followers</Text>
+              <Text style={styles.detailLabel}>Friends</Text>
             </View>
           </View>
         </View>
+
+        {/* Friend Request Button */}
+        <TouchableOpacity onPress={handleFriendRequest} style={styles.dynamicBtn}>
+          <Text style={styles.btnText}>{buttonText}</Text>
+        </TouchableOpacity>
 
         <View style={styles.postsSection}>
           <Text style={styles.sectionTitle}>Posts</Text>
@@ -191,122 +362,81 @@ const SearchedUserProfile = ({ navigation, userId }) => {
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
           numColumns={3}
-          contentContainerStyle={styles.gridContainer}
-          style={styles.imageGrid}
+          columnWrapperStyle={{ justifyContent: "space-between" }}
         />
       </SafeAreaView>
     </GestureHandlerRootView>
   );
 };
 
-const windowWidth = Dimensions.get("window").width - 5;
-
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
   container: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    width: windowWidth,
+    padding: 16,
   },
   profileHeader: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    justifyContent: "center",
+    alignItems: "center",
   },
   profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    marginBottom: 10,
   },
   profileName: {
-    fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 5,
+    fontSize: 20,
+    marginVertical: 5,
   },
   profileUsername: {
-    fontSize: 14,
+    fontSize: 16,
     color: "gray",
-    marginBottom: 5,
   },
   profileBio: {
-    fontSize: 12,
+    fontSize: 14,
     color: "gray",
-    marginBottom: 10,
     textAlign: "center",
   },
   profileDetails: {
     flexDirection: "row",
     justifyContent: "space-around",
-    width: "60%",
-    marginTop: 25,
+    marginVertical: 10,
   },
   detailItem: {
     alignItems: "center",
   },
   detailNumber: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
   },
   detailLabel: {
-    fontSize: 12,
     color: "gray",
   },
-  editbtn: {
+  dynamicBtn: {
     width: "auto",
-    borderWidth: 1,
-    borderColor: "#ffad73",
     borderRadius: 5,
+    backgroundColor: "#ffad73",
     padding: 10,
-    backgroundColor: "white",
+    marginVertical: 10,
     alignItems: "center",
-    marginHorizontal: 10,
-    alignSelf: "flex-start",
   },
   btnText: {
-    color: "#ffad73",
+    color: "black",
     fontWeight: "bold",
-    fontSize: 16,
   },
   postsSection: {
-    width: "auto",
-    paddingVertical: 10,
-    marginHorizontal: 10,
-    alignItems: "center",
+    marginTop: 20,
   },
   sectionTitle: {
-    textAlign: "center",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
-    width: "100%",
-  },
-  imageGrid: {
-    width: "100%",
-    padding: 5,
-  },
-  gridContainer: {
-    alignItems: "flex-start",
-    justifyContent: "center",
-    paddingBottom: 10,
   },
   imageContainer: {
-    width: windowWidth / 3,
-    height: windowWidth / 3,
-    padding: 1,
-    backgroundColor: "#eee",
-    justifyContent: "center",
-    alignItems: "center",
+    width: (Dimensions.get("window").width - 40) / 3,
+    marginBottom: 10,
   },
   gridImage: {
     width: "100%",
-    height: "100%",
-    resizeMode: "contain",
+    height: 100,
+    borderRadius: 5,
   },
 });
 
