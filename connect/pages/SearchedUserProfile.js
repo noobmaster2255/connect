@@ -185,9 +185,6 @@ import {
               </View>
             </View>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate("EditProfile")} style={styles.editbtn}>
-            <Text style={styles.btnText}>Edit Profile</Text>
-          </TouchableOpacity>
   
           <View style={styles.postsSection}>
             <Text style={styles.sectionTitle}>Posts</Text>
