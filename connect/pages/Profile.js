@@ -188,7 +188,7 @@ const ProfilePage = ({ navigation, session, setSession }) => {
               <Text style={styles.detailLabel}>Posts</Text>
             </View>
             <View style={styles.detailItem}>
-              <Text style={styles.detailNumber}>{profile.connection_count || 180}</Text>
+              <Text style={styles.detailNumber}>{profile.connection_count || 0}</Text>
               <Text style={styles.detailLabel}>Friends</Text>
             </View>
           </View>
