@@ -7,15 +7,20 @@ export default function FriendRequests({ session, navigation }) {
 
   useEffect(() => {
     const fetchRequests = async () => {
-      const { data, error } = await supabase
-        .from("friend_requests")
-        .select("*")
-        .eq("receiver_id", session.user.id);
+      try {
+        // Fetch friend requests with sender details
+        const { data, error } = await supabase
+          .from("friend_requests")
+          .select("id, sender_id, profiles!friend_requests_sender_id_fkey(full_name)")
+          .eq("receiver_id", session.user.id);
 
-      if (error) {
-        console.log("Error fetching friend requests:", error);
-      } else {
-        setFriendRequests(data);
+        if (error) {
+          console.log("Error fetching friend requests:", error);
+        } else {
+          setFriendRequests(data);
+        }
+      } catch (err) {
+        console.log("Error:", err.message);
       }
     };
 
@@ -25,23 +30,20 @@ export default function FriendRequests({ session, navigation }) {
   const acceptRequest = async (requestId, senderId) => {
     // Logic to accept the friend request
     try {
-      // First, delete the accepted request from the friend_requests table
       await supabase
         .from("friend_requests")
         .delete()
         .eq("id", requestId);
 
-      // Then, insert the new friendship into the friends table
       await supabase
         .from("friends")
         .insert([
           {
             user_id_1: senderId,
-            user_id_2: session.user.id, // The receiver of the request
+            user_id_2: session.user.id,
           },
         ]);
 
-      // Remove the accepted request from the local state
       setFriendRequests((prev) =>
         prev.filter((request) => request.id !== requestId)
       );
@@ -55,9 +57,9 @@ export default function FriendRequests({ session, navigation }) {
     try {
       await supabase
         .from("friend_requests")
-        .update({ status: "declined" })
+        .delete()
         .eq("id", requestId);
-
+  
       setFriendRequests((prev) =>
         prev.filter((request) => request.id !== requestId)
       );
@@ -73,14 +75,20 @@ export default function FriendRequests({ session, navigation }) {
         data={friendRequests}
         renderItem={({ item }) => (
           <View style={styles.request}>
-            <Text>{item.sender_id}</Text>
+            <Text style={styles.requestText}>
+              {`${item.profiles.full_name} has sent you a friend request.`}
+            </Text>
             <Button
               title="Accept"
               onPress={() => acceptRequest(item.id, item.sender_id)}
+              backgroundColor={styles.acceptButton.backgroundColor}
+              style={styles.button}
             />
             <Button
               title="Decline"
               onPress={() => declineRequest(item.id)}
+              color={styles.declineButton.backgroundColor}
+              style={styles.button}
             />
           </View>
         )}
@@ -93,20 +101,49 @@ export default function FriendRequests({ session, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
-    padding: 10,
+    padding: 20,
+    backgroundColor: "#f5f5f5",
   },
   header: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 28,
+    fontWeight: "600",
+    marginBottom: 20,
+    color: "#333",
   },
   request: {
-    marginBottom: 10,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
+    marginBottom: 15,
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: "#fff",
     width: "100%",
-    borderRadius: 5,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
+  requestText: {
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 15,
+  },
+  button: {
+    marginVertical: 5,
+    width: "100%",
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  acceptButton: {
+    backgroundColor: "#4CAF50",
+  },
+  declineButton: {
+    backgroundColor: "#f44336",
+  },
+  buttonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 16,
   },
 });
