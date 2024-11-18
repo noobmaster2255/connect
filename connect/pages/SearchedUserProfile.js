@@ -66,7 +66,7 @@ const checkFriendRequestStatus = async (currentUserId, searchedUserId) => {
       return null;
     }
 
-    // Check if there's an active friend request between the two users
+    // Checking if there is an active friend request between the two users
     const request = data.find(
       (req) =>
         (req.sender_id === currentUserId && req.receiver_id === searchedUserId) ||
@@ -74,10 +74,10 @@ const checkFriendRequestStatus = async (currentUserId, searchedUserId) => {
     );
 
     if (request) {
-      return request.sender_id === currentUserId ? "Sent" : "Received"; // "Sent" or "Received" based on who sent the request
+      return request.sender_id === currentUserId ? "Sent" : "Received";
     }
 
-    return null; // No active request
+    return null;
   } catch (error) {
     console.error("Error checking friend request status:", error.message);
     return null;
@@ -88,8 +88,8 @@ const SearchedUserProfile = ({ navigation, userId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [posts, setPosts] = useState([]);
   const [images, setImages] = useState([]);
-  const [isFriend, setIsFriend] = useState(false); // State to track friend status
-  const [loadingFriendStatus, setLoadingFriendStatus] = useState(true); // State to handle loading state for friend status
+  const [isFriend, setIsFriend] = useState(false);
+  const [loadingFriendStatus, setLoadingFriendStatus] = useState(true);
   const [buttonText, setButtonText] = useState("Send Friend Request");
 
   const fetchProfile = async () => {
@@ -101,7 +101,7 @@ const SearchedUserProfile = ({ navigation, userId }) => {
         const profileData = await getProfile(userId);
         setProfile(profileData);
         await fetchPostDetails(userId);
-        await fetchFriendStatus(userData.user.id); // Fetch the friend status after profile
+        await fetchFriendStatus(userData.user.id);
       }
     } catch (error) {
       console.error("Error fetching profile:", error.message);
@@ -153,7 +153,7 @@ const SearchedUserProfile = ({ navigation, userId }) => {
 
   const fetchFriendStatus = async (currentUserId) => {
     try {
-      // Check if they are already friends
+      // Checking if the users are already friends
       const { data: friends, error: friendError } = await supabase
         .from("friends")
         .select("*")
@@ -178,7 +178,7 @@ const SearchedUserProfile = ({ navigation, userId }) => {
         return;
       }
   
-      // Check if there's an active friend request
+      // Checking if there is an active friend request between the two users
       const { data: requests, error: requestError } = await supabase
         .from("friend_requests")
         .select("*")
@@ -220,7 +220,7 @@ const SearchedUserProfile = ({ navigation, userId }) => {
       const requestStatus = await checkFriendRequestStatus(userData.user.id, userId);
   
       if (isFriend) {
-        // Unfriend action (remove from friends)
+        // Unfriending
         const { error } = await supabase
           .from("friends")
           .delete()
@@ -234,7 +234,7 @@ const SearchedUserProfile = ({ navigation, userId }) => {
         setIsFriend(false);
         setButtonText("Send Friend Request");
       } else if (requestStatus === "Sent") {
-        // Cancel friend request action
+        // Canceling friend request
         const { error } = await supabase
           .from("friend_requests")
           .delete()
@@ -246,7 +246,7 @@ const SearchedUserProfile = ({ navigation, userId }) => {
         }
         setButtonText("Send Friend Request");
       } else if (requestStatus === "Received") {
-        // Accept friend request action
+        // Accepting friend request
         const { error } = await supabase
           .from("friends")
           .insert([{ user_id_1: userData.user.id, user_id_2: userId }]);
@@ -256,7 +256,7 @@ const SearchedUserProfile = ({ navigation, userId }) => {
           return;
         }
   
-        // Remove the request after accepting
+        // Removing the request after accepting
         await supabase
           .from("friend_requests")
           .delete()
@@ -264,7 +264,7 @@ const SearchedUserProfile = ({ navigation, userId }) => {
   
         setButtonText("Send Friend Request");
       } else {
-        // Send friend request action
+        // Sending friend request
         const { error } = await supabase
           .from("friend_requests")
           .insert([{ sender_id: userData.user.id, receiver_id: userId }]);
@@ -348,7 +348,6 @@ const SearchedUserProfile = ({ navigation, userId }) => {
           </View>
         </View>
 
-        {/* Friend Request Button */}
         <TouchableOpacity onPress={handleFriendRequest} style={styles.dynamicBtn}>
           <Text style={styles.btnText}>{buttonText}</Text>
         </TouchableOpacity>
