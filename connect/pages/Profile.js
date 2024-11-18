@@ -14,6 +14,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { supabase } from "../supabase";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const getProfile = async (userId) => {
   try {
@@ -63,6 +64,8 @@ const ProfilePage = ({ navigation, session, setSession }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [posts, setPosts] = useState([]);
   const [images, setImages] = useState([]);
+
+  console.log("profile", profile)
 
   const fetchProfile = async () => {
     try {
@@ -184,12 +187,19 @@ const ProfilePage = ({ navigation, session, setSession }) => {
 
           <View style={styles.profileDetails}>
             <View style={styles.detailItem}>
-              <Text style={styles.detailNumber}>{profile.post_count || 0}</Text>
-              <Text style={styles.detailLabel}>Posts</Text>
+               <TouchableOpacity
+                style={styles.iconContainer}>
+                <Text style={styles.detailNumber}>{profile.post_count || 0}</Text>
+                <Text style={styles.detailLabel}>Posts</Text> 
+              </TouchableOpacity>
             </View>
             <View style={styles.detailItem}>
-              <Text style={styles.detailNumber}>{profile.connection_count || 180}</Text>
-              <Text style={styles.detailLabel}>Friends</Text>
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={() => navigation.navigate('FriendsList', { profileId: profile?.user_id })}>
+                <Text style={styles.detailNumber}>{profile.connection_count || 180}</Text>
+                <Text style={styles.detailLabel}>Friends</Text> 
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -342,6 +352,7 @@ const styles = StyleSheet.create({
     height: "100%",
     resizeMode: "contain",
   },
+  iconContainer: { alignItems: 'center', marginTop: 20 },
 });
 
 export default ProfilePage;
