@@ -23,6 +23,7 @@ import SearchUsers from "./pages/SearchUsers.js";
 import SearchedUserProfile from "./pages/SearchedUserProfile.js";
 import { Button } from "@rneui/themed";
 import FriendRequests from "./pages/FriendRequests.js";
+import FriendsList from "./pages/FriendsList.js";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -56,6 +57,9 @@ function ProfileStack({ session = null, setSession = null, route }) {
       </Stack.Screen>
       <Stack.Screen name="FriendRequests" options={{ headerShown: false }}>
         {(props) => <FriendRequests {...props} session={session} setSession={setSession} />}
+      </Stack.Screen>
+      <Stack.Screen name="FriendsList" options={{ headerShown: false }}>
+        {(props) => <FriendsList {...props} session={session} setSession={setSession} />}
       </Stack.Screen>
       <Stack.Screen name="EditProfile" options={{ headerShown: false }}>
         {(props) => <EditProfile {...props} session={session} setSession={setSession} />}
