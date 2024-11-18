@@ -83,7 +83,6 @@ const checkFriendRequestStatus = async (currentUserId, searchedUserId) => {
     return null;
   }
 };
-
 const SearchedUserProfile = ({ navigation, userId }) => {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);

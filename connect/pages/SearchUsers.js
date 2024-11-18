@@ -18,13 +18,13 @@ const SearchUsers = ({ navigation }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const isFocused = useIsFocused(); 
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (isFocused) {
       setSelectedUserId(null);
     }
-  }, [isFocused]); 
+  }, [isFocused]);
   const searchUsers = async (query) => {
     if (query.trim() === "") {
       setSuggestions([]);
@@ -99,8 +99,6 @@ const SearchUsers = ({ navigation }) => {
       />
     </View>
   );
-
-  
 };
 
 const styles = StyleSheet.create({
