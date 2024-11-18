@@ -9,10 +9,12 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import { useState, useCallback } from "react";
+import { React, useState, useCallback, useLayoutEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { supabase } from "../supabase";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
+import { Ionicons } from "@expo/vector-icons";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const getProfile = async (userId) => {
   try {
@@ -40,6 +42,7 @@ const fetchLikesCount = async (postId) => {
     console.error("Error fetching likes count:", error.message);
     return 0;
   }
+
   return count;
 };
 
@@ -61,6 +64,8 @@ const ProfilePage = ({ navigation, session, setSession }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [posts, setPosts] = useState([]);
   const [images, setImages] = useState([]);
+
+  console.log("profile", profile)
 
   const fetchProfile = async () => {
     try {
@@ -182,22 +187,32 @@ const ProfilePage = ({ navigation, session, setSession }) => {
 
           <View style={styles.profileDetails}>
             <View style={styles.detailItem}>
-              <Text style={styles.detailNumber}>{profile.post_count || 0}</Text>
-              <Text style={styles.detailLabel}>Posts</Text>
+               <TouchableOpacity
+                style={styles.iconContainer}>
+                <Text style={styles.detailNumber}>{profile.post_count || 0}</Text>
+                <Text style={styles.detailLabel}>Posts</Text> 
+              </TouchableOpacity>
             </View>
             <View style={styles.detailItem}>
-              <Text style={styles.detailNumber}>{profile.connection_count || 180}</Text>
-              <Text style={styles.detailLabel}>Following</Text>
-            </View>
-            <View style={styles.detailItem}>
-              <Text style={styles.detailNumber}>0</Text>
-              <Text style={styles.detailLabel}>Followers</Text>
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={() => navigation.navigate('FriendsList', { profileId: profile?.user_id })}>
+                <Text style={styles.detailNumber}>{profile.connection_count || 180}</Text>
+                <Text style={styles.detailLabel}>Friends</Text> 
+              </TouchableOpacity>
             </View>
           </View>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate("EditProfile")} style={styles.editbtn}>
-          <Text style={styles.btnText}>Edit Profile</Text>
-        </TouchableOpacity>
+        <View style={styles.editBtnsContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate("EditProfile")} style={styles.editbtn}>
+            <Text style={styles.btnText}>Edit Profile</Text>
+          </TouchableOpacity>
+        
+          <TouchableOpacity onPress={() => navigation.navigate("FriendRequests")} style={styles.friendRequestsBtn}>
+            <Ionicons name="people-outline" size={24} color="black" />
+            <Text style={styles.btnText}>Friend Requests</Text>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.postsSection}>
           <Text style={styles.sectionTitle}>Posts</Text>
@@ -278,18 +293,30 @@ const styles = StyleSheet.create({
   editbtn: {
     width: "auto",
     borderWidth: 1,
-    borderColor: "#ffad73",
+    backgroundColor: "#ffad73",
     borderRadius: 5,
     padding: 10,
-    backgroundColor: "white",
     alignItems: "center",
     marginHorizontal: 10,
-    alignSelf: "flex-start",
+    marginVertical: 10,
+  },
+  friendRequestsBtn: {
+    width: "auto",
+    borderWidth: 1,
+    backgroundColor: "#ffad73",
+    borderRadius: 5,
+    padding: 10,
+    marginHorizontal: 10,
+    marginVertical: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center"
   },
   btnText: {
-    color: "#ffad73",
+    color: "black",
     fontWeight: "bold",
     fontSize: 16,
+    marginLeft: 5,
   },
   postsSection: {
     width: "auto",
@@ -325,6 +352,7 @@ const styles = StyleSheet.create({
     height: "100%",
     resizeMode: "contain",
   },
+  iconContainer: { alignItems: 'center', marginTop: 20 },
 });
 
 export default ProfilePage;

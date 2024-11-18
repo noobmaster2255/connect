@@ -18,21 +18,28 @@ import CreatePost from "./pages/CreatePost.js";
 import PostDetail from "./pages/PostDetail.js";
 import EditPost from "./pages/EditPost.js";
 import * as Notifications from "expo-notifications";
-import { subscribeComment, subscribeLike, subscribeToPost } from "./utils/notifications.js"
+import { subscribeComment, subscribeLike, subscribeToPost } from "./utils/notifications.js";
+import SearchUsers from "./pages/SearchUsers.js";
+import SearchedUserProfile from "./pages/SearchedUserProfile.js";
+import { Button } from "@rneui/themed";
+import FriendRequests from "./pages/FriendRequests.js";
+import FriendsList from "./pages/FriendsList.js";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 //permission for notifications
 async function getPushNotificationPermission() {
-  const {status} = await Notifications.requestPermissionsAsync();
-  if(status !== "granted"){
+  const { status } = await Notifications.requestPermissionsAsync();
+  if (status !== "granted") {
     Alert.alert("Permission Required!", "Enable permission to receive notifications.");
     return;
   }
 
-  const token = await Notifications.getExpoPushTokenAsync({projectId: "5e3048f4-d26c-462f-8ae4-8b351c45e255"})
-  console.log("Token : ",token.data);
+  const token = await Notifications.getExpoPushTokenAsync({
+    projectId: "5e3048f4-d26c-462f-8ae4-8b351c45e255",
+  });
+  console.log("Token : ", token.data);
 }
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -42,26 +49,36 @@ Notifications.setNotificationHandler({
   }),
 });
 
-function ProfileStack({ session , setSession}) {
+function ProfileStack({ session = null, setSession = null, route }) {
   return (
     <Stack.Navigator>
       <Stack.Screen name="ProfileScreen" options={{ headerShown: false }}>
         {(props) => <Profile {...props} session={session} />}
       </Stack.Screen>
+      <Stack.Screen name="FriendRequests" options={{ headerShown: false }}>
+        {(props) => <FriendRequests {...props} session={session} setSession={setSession} />}
+      </Stack.Screen>
+      <Stack.Screen name="FriendsList" options={{ headerShown: false }}>
+        {(props) => <FriendsList {...props} session={session} setSession={setSession} />}
+      </Stack.Screen>
       <Stack.Screen name="EditProfile" options={{ headerShown: false }}>
-        {(props) => <EditProfile {...props} session={session} setSession={setSession}/>}
+        {(props) => <EditProfile {...props} session={session} setSession={setSession} />}
       </Stack.Screen>
       <Stack.Screen name="PostDetail" options={{ headerShown: false }}>
-        {(props) => <PostDetail {...props} session={session} setSession={setSession}/>}
+        {(props) => <PostDetail {...props} session={session} setSession={setSession} />}
       </Stack.Screen>
       <Stack.Screen name="EditPost" options={{ headerShown: false }}>
-        {(props) => <EditPost {...props} session={session} setSession={setSession}/>}
+        {(props) => <EditPost {...props} session={session} setSession={setSession} />}
       </Stack.Screen>
     </Stack.Navigator>
   );
 }
 
-LogBox.ignoreLogs(['Warning: TNodeChildrenRenderer','Warning: MemoizedTNodeRenderer','Warning: TRenderEngineProvider'])
+LogBox.ignoreLogs([
+  "Warning: TNodeChildrenRenderer",
+  "Warning: MemoizedTNodeRenderer",
+  "Warning: TRenderEngineProvider",
+]);
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -83,7 +100,7 @@ export default function App() {
       supabase.removeChannel(channels);
       supabase.removeChannel(channel);
       supabase.removeChannel(likeChannel);
-    }
+    };
   }, []);
 
   if (loading) {
@@ -101,6 +118,8 @@ export default function App() {
                 iconName = "home";
               } else if (route.name === "Profile") {
                 iconName = "person";
+              } else if (route.name === "Search") {
+                iconName = "search";
               } else if (route.name === "CreatePost") {
                 iconName = "add-circle";
               }
@@ -111,14 +130,21 @@ export default function App() {
             tabBarInactiveTintColor: "gray",
           })}
         >
-          <Tab.Screen name="Home" >
+          <Tab.Screen name="Home">
             {(props) => <Home {...props} session={session} setSession={setSession} />}
           </Tab.Screen>
           <Tab.Screen name="CreatePost">
-            {(props) => <CreatePost {...props} session={session} setSession={setSession}/>}
+            {(props) => <CreatePost {...props} session={session} setSession={setSession} />}
           </Tab.Screen>
+          <Tab.Screen
+            name="Search"
+            component={SearchUsers}
+            options={{
+              headerShown: true,
+            }}
+          ></Tab.Screen>
           <Tab.Screen name="Profile">
-            {(props) => <ProfileStack {...props} session={session} setSession={setSession}/>}
+            {(props) => <ProfileStack {...props} session={session} setSession={setSession} />}
           </Tab.Screen>
         </Tab.Navigator>
       ) : (
