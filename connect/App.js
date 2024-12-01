@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavigationContainer, StackRouter } from "@react-navigation/native";
+import { DarkTheme, DefaultTheme, NavigationContainer, StackRouter } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Register from "./pages/SignUp.js";
 import Login from "./pages/Login.js";
@@ -24,6 +24,10 @@ import SearchedUserProfile from "./pages/SearchedUserProfile.js";
 import { Button } from "@rneui/themed";
 import FriendRequests from "./pages/FriendRequests.js";
 import FriendsList from "./pages/FriendsList.js";
+import { MenuProvider } from 'react-native-popup-menu';
+import {EventRegister} from 'react-native-event-listeners'
+import theme from "./theme/theme.js";
+import themeContext from "./theme/themeContext.js";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -51,6 +55,7 @@ Notifications.setNotificationHandler({
 
 function ProfileStack({ session = null, setSession = null, route }) {
   return (
+    <MenuProvider>
     <Stack.Navigator>
       <Stack.Screen name="ProfileScreen" options={{ headerShown: false }}>
         {(props) => <Profile {...props} session={session} />}
@@ -71,6 +76,7 @@ function ProfileStack({ session = null, setSession = null, route }) {
         {(props) => <EditPost {...props} session={session} setSession={setSession} />}
       </Stack.Screen>
     </Stack.Navigator>
+    </MenuProvider>
   );
 }
 
@@ -83,6 +89,19 @@ LogBox.ignoreLogs([
 export default function App() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [darkMode, setDarkMode] = useState(false)
+
+  useEffect(()=>{
+    const listener = EventRegister.addEventListener('changeTheme', (data)=>{
+      setDarkMode(data)
+      console.log("Theme", data)
+    })
+
+    return ()=>{
+      EventRegister.removeAllListeners(listener)
+    }
+
+  }, [darkMode])
 
   useEffect(() => {
     const getSession = async () => {
@@ -108,60 +127,62 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      {session ? (
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ color, size }) => {
-              let iconName;
-              if (route.name === "Home") {
-                iconName = "home";
-              } else if (route.name === "Profile") {
-                iconName = "person";
-              } else if (route.name === "Search") {
-                iconName = "search";
-              } else if (route.name === "CreatePost") {
-                iconName = "add-circle";
-              }
-              return <Ionicons name={iconName} size={size} color={color} />;
-            },
-            tabBarShowLabel: false,
-            tabBarActiveTintColor: "tomato",
-            tabBarInactiveTintColor: "gray",
-          })}
-        >
-          <Tab.Screen name="Home">
-            {(props) => <Home {...props} session={session} setSession={setSession} />}
-          </Tab.Screen>
-          <Tab.Screen name="CreatePost">
-            {(props) => <CreatePost {...props} session={session} setSession={setSession} />}
-          </Tab.Screen>
-          <Tab.Screen
-            name="Search"
-            component={SearchUsers}
-            options={{
-              headerShown: true,
-            }}
-          ></Tab.Screen>
-          <Tab.Screen name="Profile">
-            {(props) => <ProfileStack {...props} session={session} setSession={setSession} />}
-          </Tab.Screen>
-        </Tab.Navigator>
-      ) : (
-        // Unauthenticated flow (Stack Navigator)
-        <Stack.Navigator>
-          <Stack.Screen options={{ headerShown: false }} name="Welcome" component={WelcomeScreen} />
-          <Stack.Screen options={{ headerShown: false }} name="Login">
-            {(props) => <Login {...props} session={session} setSession={setSession} />}
-          </Stack.Screen>
-          <Stack.Screen options={{ headerShown: false }} name="Register">
-            {(props) => <Register {...props} session={session} setSession={setSession} />}
-          </Stack.Screen>
-        </Stack.Navigator>
-      )}
+    <themeContext.Provider value={darkMode === true ? theme.dark : theme.light}>
+      <NavigationContainer theme={darkMode === true ? DarkTheme : DefaultTheme}>
+        {session ? (
+          <Tab.Navigator
+            screenOptions={({ route }) => ({
+              tabBarIcon: ({ color, size }) => {
+                let iconName;
+                if (route.name === "Home") {
+                  iconName = "home";
+                } else if (route.name === "Profile") {
+                  iconName = "person";
+                } else if (route.name === "Search") {
+                  iconName = "search";
+                } else if (route.name === "CreatePost") {
+                  iconName = "add-circle";
+                }
+                return <Ionicons name={iconName} size={size} color={color} />;
+              },
+              tabBarShowLabel: false,
+              tabBarActiveTintColor: "tomato",
+              tabBarInactiveTintColor: "gray",
+            })}
+          >
+            <Tab.Screen name="Home">
+              {(props) => <Home {...props} session={session} setSession={setSession} />}
+            </Tab.Screen>
+            <Tab.Screen name="CreatePost">
+              {(props) => <CreatePost {...props} session={session} setSession={setSession} />}
+            </Tab.Screen>
+            <Tab.Screen
+              name="Search"
+              component={SearchUsers}
+              options={{
+                headerShown: true,
+              }}
+            ></Tab.Screen>
+            <Tab.Screen name="Profile">
+              {(props) => <ProfileStack {...props} session={session} setSession={setSession} />}
+            </Tab.Screen>
+          </Tab.Navigator>
+        ) : (
+          // Unauthenticated flow (Stack Navigator)
+          <Stack.Navigator>
+            <Stack.Screen options={{ headerShown: false }} name="Welcome" component={WelcomeScreen} />
+            <Stack.Screen options={{ headerShown: false }} name="Login">
+              {(props) => <Login {...props} session={session} setSession={setSession} />}
+            </Stack.Screen>
+            <Stack.Screen options={{ headerShown: false }} name="Register">
+              {(props) => <Register {...props} session={session} setSession={setSession} />}
+            </Stack.Screen>
+          </Stack.Navigator>
+        )}
 
-      <StatusBar style="auto" />
-      <Toast />
-    </NavigationContainer>
+        <StatusBar style="auto" />
+        <Toast />
+      </NavigationContainer>
+    </themeContext.Provider>
   );
 }

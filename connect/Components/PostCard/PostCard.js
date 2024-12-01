@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Dimensions, Modal } from 'react-native';
 import { Image } from 'expo-image';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -12,6 +12,8 @@ import { useWindowDimensions } from 'react-native';
 import { supabase } from '../../supabase';
 import CommentOverlay from '../CommentOverlay/CommentOverlay';
 import { addLike, removeLike } from '../postService';
+import themeContext from "../../theme/themeContext.js";
+import { color } from '@rneui/themed/dist/config/index.js';
 
 const textStyles = {
     color: '#000',
@@ -49,6 +51,8 @@ const PostCard = ({ item, currentUser, hasShadow = true , posts, setPosts}) => {
     const [userLiked, setIsUserLiked] = useState(false);
     const [isCommentVisible, setIsCommentVisible] = useState(false);
     const [isReportVisible, setIsReportVisible] = useState(false);
+    const theme = useContext(themeContext)
+    const [darkMode, setDarkMode] = useState(false)
 
     const { width: contentWidth } = useWindowDimensions();
 
@@ -143,7 +147,7 @@ const PostCard = ({ item, currentUser, hasShadow = true , posts, setPosts}) => {
         if (userLiked) {
             return <Ionicons name="heart" size={20} color={"red"} />;
         } else {
-            return <Ionicons name="heart-outline" size={20} color={"black"} />;
+          return <Ionicons name="heart-outline" size={20} color={theme.text} />;
         }
     };
 
@@ -177,11 +181,11 @@ const PostCard = ({ item, currentUser, hasShadow = true , posts, setPosts}) => {
     }, [item.id]);
 
     return (
-        <View style={[styles.container, hasShadow && shadowStyle]}>
+        <View style={[styles.container,{backgroundColor: theme.card}, hasShadow && shadowStyle]}>
             <View style={styles.header}>
                 <FontAwesome name="user-circle" size={40} color="#FF9567" />
                 <View style={{ gap: 2 }}>
-                    <Text style={styles.userName}>
+                    <Text style={[styles.userName,{color: theme.text}]}>
                         {item.user && item?.user?.username}
                     </Text>
                     <Text style={styles.subHeading}>{createdAt}</Text>
@@ -189,11 +193,12 @@ const PostCard = ({ item, currentUser, hasShadow = true , posts, setPosts}) => {
             </View>
             <View style={styles.content}>
                 {item?.body && (
-                    <RenderHTML
-                        contentWidth={contentWidth}
-                        source={{ html: item?.body }}
-                        tagsStyles={tagsStyles}
-                    />
+                    // <RenderHTML
+                    //     contentWidth={contentWidth}
+                    //     source={{ html: item?.body }}
+                    //     tagsStyles={tagsStyles}
+                    // />
+                    <Text style={{color:theme.text}}>{item.body}</Text>
                 )}
                 {item?.file && item?.file.includes('postImages') && (
                     <Image
@@ -213,7 +218,7 @@ const PostCard = ({ item, currentUser, hasShadow = true , posts, setPosts}) => {
                     />
                 )}
                 <View style={styles.footer}>
-                    <View style={styles.footerButton}>
+                    <View style={[styles.footerButton,{color: theme.text}]}>
                         <TouchableOpacity onPress={() => {
                             if (userLiked) {
                                 removeLike(item.id);
@@ -227,17 +232,17 @@ const PostCard = ({ item, currentUser, hasShadow = true , posts, setPosts}) => {
                         }}>
                             {Icon()}
                         </TouchableOpacity>
-                        <Text style={styles.count}>{likesCount}</Text>
+                        <Text style={[styles.count,{color: theme.text}]}>{likesCount}</Text>
                     </View>
-                    <View style={styles.footerButton}>
+                    <View style={[styles.footerButton,{color: theme.text}]}>
                         <TouchableOpacity onPress={handleComment}>
-                            <Ionicons name="chatbubble-outline" size={20} color={"black"} />
+                        <Ionicons name="chatbubble-outline" size={20} color={theme.text} />
                         </TouchableOpacity>
-                        <Text style={styles.count}>{commentsCount}</Text>
+                        <Text style={[styles.count,{color: theme.text}]}>{commentsCount}</Text>
                     </View>
                     <View style={styles.footerButton}>
                         <TouchableOpacity onPress={handleReport}>
-                            <FontAwesome5 name="exclamation-circle" size={18} color="black" />
+                            <FontAwesome5 name="exclamation-circle" size={18} color={theme.text} />
                         </TouchableOpacity>
                     </View>
                 </View>
