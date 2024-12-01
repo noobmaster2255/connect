@@ -179,9 +179,9 @@ const PostCard = ({ item, currentUser, hasShadow = true }) => {
                         <Text style={styles.count}>{commentsCount}</Text>
                     </View>
                     <View style={styles.footerButton}>
-                        {/* <TouchableOpacity>
+                        { <TouchableOpacity onPress={() => { /* Need to set up the report function */}}>
                             <FontAwesome5 name="share-square" size={24} color="black" />
-                        </TouchableOpacity> */}
+                        </TouchableOpacity> }
                         {/* <Text style={styles.count}>{0}</Text> */}
                     </View>
                 </View>
