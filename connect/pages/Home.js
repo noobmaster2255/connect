@@ -43,7 +43,7 @@ export default function Home({navigation, session, setSession}){
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listStyle}
         keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) => <PostCard item={item} currentUser={user} /> }
+        renderItem={({ item }) => <PostCard item={item} currentUser={user} posts={posts} setPosts={setPosts}/> }
       />
     </View>
   );

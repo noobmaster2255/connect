@@ -8,12 +8,24 @@ import {
   ActivityIndicator,
   Dimensions,
   TouchableOpacity,
+  Switch,
 } from "react-native";
-import { React, useState, useCallback, useLayoutEffect } from "react";
+import { React, useState, useCallback, useLayoutEffect, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { supabase } from "../supabase";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from 'react-native-popup-menu';
+import Entypo from '@expo/vector-icons/Entypo';
+import Feather from '@expo/vector-icons/Feather';
+import {EventRegister} from 'react-native-event-listeners'
+import themeContext from "../theme/themeContext";
 
 const getProfile = async (userId) => {
   try {
@@ -63,6 +75,11 @@ const ProfilePage = ({ navigation, session, setSession }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [posts, setPosts] = useState([]);
   const [images, setImages] = useState([]);
+  const theme = useContext(themeContext)
+  const [darkMode, setDarkMode] = useState(false)
+
+
+  //  console.log("Mode", darkMode)
 
   const fetchProfile = async () => {
     try {
@@ -154,14 +171,16 @@ const ProfilePage = ({ navigation, session, setSession }) => {
   if (isLoading) {
     return (
       <SafeAreaView>
-        <ActivityIndicator size={"large"} color={"#0000ff"} />
+        <View style={styles.loader}>
+        <ActivityIndicator size={"large"} color={"grey"} />
+        </View>
       </SafeAreaView>
     );
   }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={[styles.safeArea,{backgroundColor: theme.background}]}>
         <View style={styles.container}>
           <View style={styles.profileHeader}>
             <View>
@@ -175,7 +194,7 @@ const ProfilePage = ({ navigation, session, setSession }) => {
               />
             </View>
 
-            <Text style={styles.profileName}>{profile.full_name || "John Doe"}</Text>
+            <Text style={[styles.profileName,{color: theme.text}]}>{profile.full_name || "-"}</Text>
             <Text style={styles.profileUsername}>
               @{profile.username || "Please set a username."}
             </Text>
@@ -184,14 +203,62 @@ const ProfilePage = ({ navigation, session, setSession }) => {
 
           <View style={styles.profileDetails}>
             <View style={styles.detailItem}>
-              <Text style={styles.detailNumber}>{profile.post_count || 0}</Text>
-              <Text style={styles.detailLabel}>Posts</Text>
+               <TouchableOpacity
+                style={styles.iconContainer}>
+                <Text style={[styles.detailNumber,{color: theme.text}]}>{posts.length || "-"}</Text>
+                <Text style={styles.detailLabel}>Posts</Text> 
+              </TouchableOpacity>
             </View>
             <View style={styles.detailItem}>
-              <Text style={styles.detailNumber}>{profile.connection_count || 0}</Text>
-              <Text style={styles.detailLabel}>Friends</Text>
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={() => navigation.navigate('FriendsList', { profileId: profile?.user_id })}>
+                <Text style={[styles.detailNumber,{color: theme.text}]}>{profile.connection_count || "-"}</Text>
+                <Text style={styles.detailLabel}>Friends</Text> 
+              </TouchableOpacity>
             </View>
           </View>
+
+          <View style={styles.options}>
+          <Menu>
+              <MenuTrigger>
+              <Entypo name="dots-three-vertical" size={24} color='grey' />
+              </MenuTrigger>
+              <MenuOptions customStyles={{
+                optionsContainer:{
+                      display: 'flex',
+                      alignItems: 'center',
+                      marginTop: -60,
+                      marginLeft: -20,
+                      shadowOpacity:0.2,
+                      borderRadius: 10, 
+                      width:200,
+                      padding:5,
+                      backgroundColor:theme.card
+                }
+              }}>
+                  <MenuOption>
+                      <View style={styles.settingIcon}>
+                      <Feather name="settings" size={30} color="grey" />
+                      </View>
+                  </MenuOption>
+                  <View style={styles.divider}></View>
+                <MenuOption>
+                  <View style={styles.optionItem}>
+                    <Text style={{color:theme.text}}>Dark Mode</Text>
+                    <Switch
+                      size={1}
+                      value={darkMode}
+                      onValueChange={(value) => {
+                        setDarkMode(value)
+                        EventRegister.emit('changeTheme', value)
+                      }}
+                    />
+                  </View>
+                </MenuOption>
+              </MenuOptions>
+          </Menu>
+      </View>
         </View>
         <View style={styles.editBtnsContainer}>
           <TouchableOpacity onPress={() => navigation.navigate("EditProfile")} style={styles.editbtn}>
@@ -240,6 +307,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "flex-start",
     justifyContent: "center",
+    marginTop:0
   },
   profileImage: {
     width: 100,
@@ -342,6 +410,44 @@ const styles = StyleSheet.create({
     height: "100%",
     resizeMode: "contain",
   },
+  iconContainer: { alignItems: 'center', marginTop: 20 },
+  options:{
+    paddingTop:10,
+    display:'flex',
+    flexDirection: 'row',
+    justifyContent:'flex-end',
+    padding:20,
+    paddingBottom:25,
+    // backgroundColor: colors.dashboardHeader,
+},
+divider:{
+    padding:0.5,
+    // width: '100%',
+    backgroundColor:'#9ea3b0',
+    display: 'flex',
+    width:150, 
+},
+settingIcon:{
+  display:'flex',
+  alignItems:'center',
+  justifyContent:'center',
+  height:50
+},
+loader:{
+  display:'flex',
+  alignItems:'center',
+  justifyContent:'center',
+  height:'100%'
+},
+optionItem:{
+  display:'flex',
+  flexDirection:'row',
+  gap:'10',
+  justifyContent:'center',
+  alignItems:'center',
+  padding:10
+}
+
 });
 
 export default ProfilePage;
