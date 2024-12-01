@@ -28,6 +28,7 @@ import { MenuProvider } from 'react-native-popup-menu';
 import {EventRegister} from 'react-native-event-listeners'
 import theme from "./theme/theme.js";
 import themeContext from "./theme/themeContext.js";
+import SavedPosts from "./pages/SavedPosts.js";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -74,6 +75,9 @@ function ProfileStack({ session = null, setSession = null, route }) {
       </Stack.Screen>
       <Stack.Screen name="EditPost" options={{ headerShown: false }}>
         {(props) => <EditPost {...props} session={session} setSession={setSession} />}
+      </Stack.Screen>
+      <Stack.Screen name="SavedPosts" options={{ headerShown: false }}>
+        {(props) => <SavedPosts {...props} session={session} setSession={setSession} />}
       </Stack.Screen>
     </Stack.Navigator>
     </MenuProvider>
