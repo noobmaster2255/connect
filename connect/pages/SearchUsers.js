@@ -36,7 +36,7 @@ const SearchUsers = ({ navigation }) => {
       const { data, error } = await supabase
         .from("profiles")
         .select("user_id, username, full_name")
-        .ilike("username", `%${query}%`);
+        .or(`username.ilike.%${query}%,full_name.ilike.%${query}%`);
 
       if (error) {
         console.error("Error searching users:", error.message);
