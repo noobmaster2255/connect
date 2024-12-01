@@ -87,19 +87,22 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     columnWrapper: {
-        justifyContent: 'space-between',
-        marginBottom: 10,
+        justifyContent: 'space-between',  // Space out columns evenly
+        marginBottom: 15,  // Add space between rows
     },
     postContainer: {
-        width: (Dimensions.get('window').width / 2) - 15, // Two columns with spacing
+        width: (Dimensions.get('window').width - 30) / 3, // Three columns with spacing
         borderRadius: 10,
         overflow: 'hidden',
-        height: 200,
+        height: 150,
         justifyContent: 'center',
         alignItems: 'center',
+        marginBottom: 15,  // Add spacing between posts
     },
     postImage: {
         width: '100%',
         height: '100%',
+        aspectRatio: 1,  // Maintain a square aspect ratio for the image
+        borderRadius: 10,
     },
 });
