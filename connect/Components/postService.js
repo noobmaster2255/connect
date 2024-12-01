@@ -35,6 +35,47 @@ export const createOrUpdatePost = async(post)=>{
     }
 }
 
+export const savePost = async (postId, userId) => {
+  const { data, error } = await supabase
+      .from("saved_posts")
+      .insert([{ post_id: postId, saved_by: userId }]);
+
+  if (error) {
+      console.error("Error saving post:", error.message);
+      return false;
+  }
+  return true;
+};
+
+export const unsavePost = async (postId, userId) => {
+  const { data, error } = await supabase
+      .from("saved_posts")
+      .delete()
+      .eq("post_id", postId)
+      .eq("saved_by", userId);
+
+  if (error) {
+      console.error("Error unsaving post:", error.message);
+      return false;
+  }
+  return true;
+};
+
+export const fetchUserSavedStatus = async (postId, userId) => {
+  const { data, error } = await supabase
+      .from("saved_posts")
+      .select("id")
+      .eq("post_id", postId)
+      .eq("saved_by", userId)
+      .single();
+
+  if (error && error.code !== "PGRST116") { // Ignore "no rows" error
+      console.error("Error fetching saved status:", error.message);
+      return false;
+  }
+  return !!data; // Return true if a saved record exists
+};
+
 export const uploadFile = async(folderName, fileUri, isImg=true)=>{
     try {
 

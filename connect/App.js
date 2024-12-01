@@ -182,6 +182,8 @@ export default function App() {
 
         <StatusBar style="auto" />
         <Toast />
+
+        <Stack.Screen options={{ headerShown: false }} name="PostDetail" component={PostDetail} />
       </NavigationContainer>
     </themeContext.Provider>
   );

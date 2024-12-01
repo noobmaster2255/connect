@@ -5,7 +5,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import RenderHTML from 'react-native-render-html';
 import moment from 'moment';
-import { getSupabaseFileUrl } from '../postService';
+import { getSupabaseFileUrl, savePost, unsavePost, fetchUserSavedStatus } from '../postService';
 import { Video } from 'expo-av';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useWindowDimensions } from 'react-native';
@@ -53,6 +53,7 @@ const PostCard = ({ item, currentUser, hasShadow = true , posts, setPosts}) => {
     const [isReportVisible, setIsReportVisible] = useState(false);
     const theme = useContext(themeContext)
     const [darkMode, setDarkMode] = useState(false)
+    const [isSaved, setIsSaved] = useState(false);
 
     const { width: contentWidth } = useWindowDimensions();
 
@@ -66,6 +67,33 @@ const PostCard = ({ item, currentUser, hasShadow = true , posts, setPosts}) => {
             return 0;
         }
         setCommentCount(count);
+    };
+
+    const fetchSaveStatus = async (postId) => {
+      const sessionData = await supabase.auth.getSession();
+      const userId = sessionData.data.session.user.id;
+      const savedStatus = await fetchUserSavedStatus(postId, userId);
+      setIsSaved(savedStatus);
+    };
+
+    useEffect(() => {
+      fetchLikesCount(item.id);
+      fetchCommentsCount(item.id);
+      fetchUserLiked(item.id);
+      fetchSaveStatus(item.id); // Fetch save status
+    }, [item.id]);
+
+    const handleSavePost = async () => {
+      const sessionData = await supabase.auth.getSession();
+      const userId = sessionData.data.session.user.id;
+  
+      if (isSaved) {
+          const success = await unsavePost(item.id, userId);
+          if (success) setIsSaved(false);
+      } else {
+          const success = await savePost(item.id, userId);
+          if (success) setIsSaved(true);
+      }
     };
 
 //report logic
@@ -239,6 +267,15 @@ const PostCard = ({ item, currentUser, hasShadow = true , posts, setPosts}) => {
                         <Ionicons name="chatbubble-outline" size={20} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={[styles.count,{color: theme.text}]}>{commentsCount}</Text>
+                    </View>
+                    <View style={styles.footerButton}>
+                        <TouchableOpacity onPress={handleSavePost}>
+                          <Ionicons 
+                            name={isSaved ? "bookmark" : "bookmark-outline"} 
+                            size={20} 
+                            color={theme.text} 
+                          />
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.footerButton}>
                         <TouchableOpacity onPress={handleReport}>
