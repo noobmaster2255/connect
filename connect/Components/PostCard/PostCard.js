@@ -18,6 +18,8 @@ const textStyles = {
     fontSize: 16,
 };
 
+
+
 const tagsStyles = {
     div: textStyles,
     p: textStyles,
@@ -30,7 +32,7 @@ const tagsStyles = {
     },
 };
 
-const PostCard = ({ item, currentUser, hasShadow = true }) => {
+const PostCard = ({ item, currentUser, hasShadow = true , posts, setPosts}) => {
     const shadowStyle = {
         shadowOffset: {
             width: 0,
@@ -61,6 +63,59 @@ const PostCard = ({ item, currentUser, hasShadow = true }) => {
         }
         setCommentCount(count);
     };
+
+//report logic
+    const handleReportPost = async (item, currentUser) => {
+        try {
+            // Fetch the current report data for the post
+            const { data, error } = await supabase
+                .from('posts')
+                .select('reported_users, number_of_reports, is_hidden')
+                .eq('id', item.id)
+                .single();
+    
+            if (error) throw new Error("Error fetching post report data: " + error.message);
+    
+            // Check if the current user has already reported the post
+            const currentUserId = currentUser?.id; // Assuming `currentUser` has the user ID
+            if (data.reported_users?.includes(currentUserId)) {
+                alert("You have already reported this post.");
+                return;
+            }
+    
+            // Update the post's report data
+            const updatedReportedUsers = [...(data.reported_users || []), currentUserId];
+            const updatedNumberOfReports = (data.number_of_reports || 0) + 1;
+            const updatedIsHidden = updatedNumberOfReports >= 3 ? true : data.is_hidden;
+    
+            const { error: updateError } = await supabase
+                .from('posts')
+                .update({
+                    reported_users: updatedReportedUsers,
+                    number_of_reports: updatedNumberOfReports,
+                    is_hidden: updatedIsHidden,
+                })
+                .eq('id', item.id);
+            if(updatedIsHidden){
+                setPosts(posts.filter(post => post.id !== item.id))
+            }
+            if (updateError) throw new Error("Error updating post report data: " + updateError.message);
+    
+            // Notify the user of the report action
+            if (updatedIsHidden) {
+                alert("This post has been reported multiple times and is now hidden.");
+            } else {
+                alert("Post reported successfully.");
+            }
+    
+            setIsReportVisible(false); // Close the modal
+        } catch (err) {
+            console.error(err.message);
+            alert("Failed to report the post. Please try again.");
+        }
+    };
+
+
 
     const fetchLikesCount = async (postId) => {
         const { count, error } = await supabase
@@ -197,10 +252,10 @@ const PostCard = ({ item, currentUser, hasShadow = true }) => {
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Report Post</Text>
-                        <TouchableOpacity onPress={() => {/* Handle reporting logic */}}>
+                        <TouchableOpacity onPress={() => {handleReportPost(item, currentUser)}}>
                             <Text style={styles.modalOption}>Spam</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => {/* Handle reporting logic */}}>
+                        <TouchableOpacity onPress={() => {handleReportPost(item, currentUser)}}>
                             <Text style={styles.modalOption}>Inappropriate Content</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setIsReportVisible(false)}>

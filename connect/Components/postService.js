@@ -137,7 +137,8 @@ export const fetchPostsWithRealtimeUpdates = async (limit = 10, setPosts) => {
         .from("posts")
         .select(`*, user:profiles (id, user_id, username, full_name)`)
         .order("created_At", { ascending: false })
-        .limit(limit);
+        .limit(limit)
+        .neq("is_hidden", true);
   
       if (error) {
         console.error("Error fetching posts:", error);
