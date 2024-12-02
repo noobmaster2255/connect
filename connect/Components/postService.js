@@ -69,11 +69,11 @@ export const fetchUserSavedStatus = async (postId, userId) => {
       .eq("saved_by", userId)
       .single();
 
-  if (error && error.code !== "PGRST116") { // Ignore "no rows" error
+  if (error && error.code !== "PGRST116") {
       console.error("Error fetching saved status:", error.message);
       return false;
   }
-  return !!data; // Return true if a saved record exists
+  return !!data;
 };
 
 export const uploadFile = async(folderName, fileUri, isImg=true)=>{
@@ -204,7 +204,7 @@ export const fetchPostsWithRealtimeUpdates = async (limit = 10, setPosts) => {
               .single();
   
             if (profile) {
-              newPost.user = profile; // Attach the profile data to the post
+              newPost.user = profile;
             }
           }
   
