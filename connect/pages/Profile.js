@@ -225,38 +225,52 @@ const ProfilePage = ({ navigation, session, setSession }) => {
               <Entypo name="dots-three-vertical" size={24} color='grey' />
               </MenuTrigger>
               <MenuOptions customStyles={{
-                optionsContainer:{
-                      display: 'flex',
-                      alignItems: 'center',
-                      marginTop: -60,
-                      marginLeft: -20,
-                      shadowOpacity:0.2,
-                      borderRadius: 10, 
-                      width:200,
-                      padding:5,
-                      backgroundColor:theme.card
-                }
-              }}>
-                  <MenuOption>
-                      <View style={styles.settingIcon}>
-                      <Feather name="settings" size={30} color="grey" />
-                      </View>
-                  </MenuOption>
-                  <View style={styles.divider}></View>
-                <MenuOption>
-                  <View style={styles.optionItem}>
-                    <Text style={{color:theme.text}}>Dark Mode</Text>
-                    <Switch
-                      size={1}
-                      value={darkMode}
-                      onValueChange={(value) => {
-                        setDarkMode(value)
-                        EventRegister.emit('changeTheme', value)
-                      }}
-                    />
-                  </View>
-                </MenuOption>
-              </MenuOptions>
+    optionsContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        marginTop: -60,
+        marginLeft: -20,
+        shadowOpacity: 0.2,
+        borderRadius: 10,
+        width: 200,
+        padding: 5,
+        backgroundColor: theme.card,
+    }
+}}>
+    <MenuOption>
+        <View style={styles.settingIcon}>
+            <Feather name="settings" size={30} color="grey" />
+        </View>
+    </MenuOption>
+    <View style={styles.divider}></View>
+    <MenuOption>
+        <View style={styles.optionItem}>
+            <Text style={{ color: theme.text }}>Dark Mode</Text>
+            <Switch
+                size={1}
+                value={darkMode}
+                onValueChange={(value) => {
+                    setDarkMode(value);
+                    EventRegister.emit('changeTheme', value);
+                }}
+            />
+        </View>
+    </MenuOption>
+    <View style={styles.divider}></View>
+    {/* Added Saved Posts Option */}
+    <MenuOption
+        onSelect={() => navigation.navigate("SavedPosts")}
+        customStyles={{
+            optionWrapper: {
+                flexDirection: "row",
+                alignItems: "center",
+                padding: 10,
+            },
+        }}>
+        <Feather name="bookmark" size={20} color="grey" style={{ marginRight: 10 }} />
+        <Text style={{ color: theme.text }}>Saved Posts</Text>
+    </MenuOption>
+</MenuOptions>
           </Menu>
       </View>
         </View>
