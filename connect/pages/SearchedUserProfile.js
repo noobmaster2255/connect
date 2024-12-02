@@ -298,12 +298,13 @@ const SearchedUserProfile = ({ navigation, userId }) => {
     return (
       <TouchableOpacity
         style={styles.imageContainer}
-        onPress={() => navigation.navigate("PostDetail", { post: item })}
+        onPress={() => navigation.navigate("UserPostDetail", { post: item })}
       >
         <Image source={{ uri: item.image }} style={styles.gridImage} resizeMode="cover" />
       </TouchableOpacity>
     );
   };
+  
 
   if (isLoading || loadingFriendStatus) {
     return (

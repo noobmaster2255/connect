@@ -84,6 +84,26 @@ function ProfileStack({ session = null, setSession = null, route }) {
   );
 }
 
+function SearchStack({session = null, setSession = null, route }) {
+  return(
+    <MenuProvider>
+      <Stack.Navigator>
+        <Stack.Screen name="SearchUsers" options={{ headerShown: false }}>
+        {(props) => <SearchUsers {...props} session={session} setSession={setSession} />}
+        </Stack.Screen>
+
+        <Stack.Screen name="SearchedUserProfile" options={{ headerShown: false }}>
+        {(props) => <SearchedUserProfile {...props} session={session} setSession={setSession} />}
+        </Stack.Screen>
+
+        <Stack.Screen name="UserPostDetail" options={{ headerShown: false }}>
+        {(props) => <PostDetail {...props} session={session} setSession={setSession} />}
+        </Stack.Screen>
+      </Stack.Navigator>
+    </MenuProvider>
+  )
+}
+
 LogBox.ignoreLogs([
   "Warning: TNodeChildrenRenderer",
   "Warning: MemoizedTNodeRenderer",
@@ -160,16 +180,23 @@ export default function App() {
             <Tab.Screen name="CreatePost">
               {(props) => <CreatePost {...props} session={session} setSession={setSession} />}
             </Tab.Screen>
-            <Tab.Screen
+            {/* <Tab.Screen
               name="Search"
               component={SearchUsers}
               options={{
                 headerShown: true,
               }}
-            ></Tab.Screen>
+            ></Tab.Screen> */}
+             <Tab.Screen name="Search">
+              {(props) => <SearchStack {...props} session={session} setSession={setSession} />}
+            </Tab.Screen>
+
             <Tab.Screen name="Profile">
               {(props) => <ProfileStack {...props} session={session} setSession={setSession} />}
             </Tab.Screen>
+
+            
+           
           </Tab.Navigator>
         ) : (
           // Unauthenticated flow (Stack Navigator)
