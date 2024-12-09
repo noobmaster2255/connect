@@ -298,12 +298,13 @@ const SearchedUserProfile = ({ navigation, userId }) => {
     return (
       <TouchableOpacity
         style={styles.imageContainer}
-        onPress={() => navigation.navigate("PostDetail", { post: item })}
+        onPress={() => navigation.navigate("UserPostDetail", { post: item })}
       >
         <Image source={{ uri: item.image }} style={styles.gridImage} resizeMode="cover" />
       </TouchableOpacity>
     );
   };
+  
 
   if (isLoading || loadingFriendStatus) {
     return (
@@ -342,7 +343,7 @@ const SearchedUserProfile = ({ navigation, userId }) => {
               <Text style={styles.detailLabel}>Posts</Text>
             </View>
             <View style={styles.detailItem}>
-              <Text style={styles.detailNumber}>{profile.connection_count || 180}</Text>
+              <Text style={styles.detailNumber}>{profile.connection_count || 0}</Text>
               <Text style={styles.detailLabel}>Friends</Text>
             </View>
           </View>

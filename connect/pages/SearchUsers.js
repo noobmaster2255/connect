@@ -11,9 +11,10 @@ import {
 import { supabase } from "../supabase";
 import SearchedUserProfile from "./SearchedUserProfile";
 import { Button } from "@rneui/themed";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 
-const SearchUsers = ({ navigation }) => {
+const SearchUsers = ({  }) => {
+  const navigation = useNavigation()
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +37,7 @@ const SearchUsers = ({ navigation }) => {
       const { data, error } = await supabase
         .from("profiles")
         .select("user_id, username, full_name")
-        .ilike("username", `%${query}%`);
+        .or(`username.ilike.%${query}%,full_name.ilike.%${query}%`);
 
       if (error) {
         console.error("Error searching users:", error.message);
@@ -72,7 +73,9 @@ const SearchUsers = ({ navigation }) => {
   if (selectedUserId) {
     return (
       <View style={styles.container}>
-        {selectedUserId && <SearchedUserProfile userId={selectedUserId} />}
+        {selectedUserId && (
+          <SearchedUserProfile userId={selectedUserId} navigation={navigation} />
+        )}
       </View>
     );
   }
