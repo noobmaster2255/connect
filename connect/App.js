@@ -30,6 +30,7 @@ import theme from "./theme/theme.js";
 import themeContext from "./theme/themeContext.js";
 import SavedPosts from "./pages/SavedPosts.js";
 
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -111,6 +112,7 @@ LogBox.ignoreLogs([
 ]);
 
 export default function App() {
+  LogBox.ignoreAllLogs(true);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false)
